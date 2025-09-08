@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millan Crochet - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background-color: #fffaf0;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 10px;
+            border: 1px solid #D4AF37;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .auth-header {
+            text-align: center;
+            padding: 30px 20px 10px;
+        }
+
+        .logo {
+            color: #D4AF37;
+            font-family: 'Times New Roman', serif;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #888;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #D4AF37;
+            border-bottom: 2px solid #D4AF37;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+
+        .forgot-pw {
+            display: block;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #D4AF37;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #D4AF37;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #c19b2e;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            background: #fffaf0;
+            position: relative;
+            padding: 0 15px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-btn {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn.google {
+            color: #4285F4;
+        }
+        .social-btn.instagram {
+            color: #E1306C;
+        }
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #fffaf0;
+        }
+
+        .login-footer h3 {
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .social-links a {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">MC</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showForm('login')">Login</button>
+            <button class="tab-btn" onclick="showForm('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="login-form" class="form active" onsubmit="handleAuth(event, 'login')">
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                <a href="#" class="forgot-pw">Forgot Password?</a>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="form" onsubmit="handleAuth(event, 'signup')">
+                <div class="input-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required placeholder="Enter your full name">
+                </div>
+                <div class="input-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required placeholder="Enter your email">
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required placeholder="Create a password">
+                </div>
+                <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+
+            <div class="divider"><span>Or continue with</span></div>
+
+            <div class="social-login">
+                <button class="social-btn google" onclick="signInWithGoogle()">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+                <button class="social-btn instagram" onclick="signInWithInstagram()">
+                    <i class="fab fa-instagram"></i> Continue with Instagram
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="login-footer">
+        <h3>Crafting Elegance, Stitch by Stitch.</h3>
+        <div class="social-links">
+            <a href="https://www.instagram.com/milans_crotchet_wrld" target="_blank" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/254791174063" target="_blank" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="mailto:hello@milancrochet.co.ke" title="Email">
+                <i class="far fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        function showForm(formType) {
+            // Hide all forms
+            document.querySelectorAll('.form').forEach(form => form.classList.remove('active'));
+            // Show the selected form
+            document.getElementById(formType + '-form').classList.add('active');
+
+            // Update active tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function handleAuth(event, type) {
+            event.preventDefault();
+            // Simulate a successful login for demonstration.
+            // In a real application, you would validate credentials against a server here.
+            alert(`${type} successful! Redirecting...`);
+            // Save a simple flag in localStorage to simulate being logged in.
+            localStorage.setItem('isLoggedIn', 'true');
+            // Redirect to the homepage.
+            window.location.href = 'home.html';
+        }
+
+        function signInWithGoogle() {
+            alert('Redirecting to Google authentication. This functionality requires backend setup.');
+            // window.location.href = 'YOUR_GOOGLE_OAUTH_URL_HERE';
+        }
+
+        function signInWithInstagram() {
+            // This would open the Instagram OAuth flow.
+            // For now, we'll just open the Instagram profile in a new tab as a fallback.
+            window.open('https://www.instagram.com/milans_crotchet_wrld', '_blank');
+        }
+    </script>
+</body>
+</html>
