@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Milan Crochet</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="header admin-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" onclick="navigateTo('admin-dashboard.html')">
+                    <div class="logo-icon">M</div>
+                    <span class="logo-text">Milan Admin</span>
+                </div>
+                
+                <nav class="admin-nav">
+                    <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+                    <button class="nav-link" data-tab="orders">Orders</button>
+                    <button class="nav-link" data-tab="products">Products</button>
+                    <button class="nav-link" data-tab="customers">Customers</button>
+                    <button class="nav-link" onclick="logoutAdmin()">Logout</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div class="admin-tab active" id="dashboard-tab">
+                <h1>Dashboard Overview</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <div class="stat-number" id="totalOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Verification</h3>
+                        <div class="stat-number" id="pendingOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Revenue</h3>
+                        <div class="stat-number" id="totalRevenue">KSh 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Products</h3>
+                        <div class="stat-number" id="totalProducts">0</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="section">
+                    <h2>Recent Orders</h2>
+                    <div id="recentOrders">
+                        <!-- Orders will load here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="admin-tab" id="orders-tab">
+                <div class="section-header">
+                    <h1>Order Management</h1>
+                    <button class="btn btn-primary" onclick="exportOrders()">Export Orders</button>
+                </div>
+                
+                <div class="orders-list" id="ordersList">
+                    <!-- All orders will load here -->
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="admin-tab" id="products-tab">
+                <div class="section-header">
+                    <h1>Product Management</h1>
+                    <button class="btn btn-primary" onclick="admin.showAddProductForm()">+ Add Product</button>
+                </div>
+                
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will load here -->
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div class="admin-tab" id="customers-tab">
+                <h1>Customer Management</h1>
+                <div id="customersList">
+                    <!-- Customers will load here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <h2>Add New Product</h2>
+            <form id="addProductForm">
+                <!-- Product form fields -->
+            </form>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

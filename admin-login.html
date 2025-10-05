@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Milan Crochet</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .admin-login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .admin-login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .admin-only {
+            display: none;
+        }
+        
+        .admin-logged-in .admin-only {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login-container">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Milan Crochet Admin</h2>
+        
+        <form class="admin-login-form" id="adminLoginForm">
+            <div class="form-group">
+                <label class="form-label">Admin Password</label>
+                <input type="password" class="form-input" id="adminPassword" required 
+                       placeholder="Enter admin password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Access Admin Panel</button>
+        </form>
+        
+        <div class="admin-only">
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="admin-dashboard.html" class="btn btn-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

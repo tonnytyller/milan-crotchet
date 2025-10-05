@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Milan Crochet</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Profile Page Styles */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .profile-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+        }
+
+        .profile-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        /* Profile Sidebar */
+        .profile-sidebar {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .edit-avatar-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-avatar-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .user-stats {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Profile Navigation */
+        .profile-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            text-align: left;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #f97316;
+        }
+
+        .nav-item.active {
+            background: #fef3f2;
+            color: #f97316;
+            font-weight: 500;
+        }
+
+        .nav-item svg {
+            margin-right: 0.75rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Profile Main Content */
+        .profile-main {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Orders Section */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .order-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .order-date {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-processing {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pending {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-delivered {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .order-items {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            min-width: 200px;
+        }
+
+        .order-item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-name {
+            font-weight: 500;
+            color: #111827;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-item-price {
+            color: #f97316;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .order-total {
+            text-align: right;
+            font-weight: 600;
+            color: #111827;
+            font-size: 1.125rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Settings Section */
+        .settings-group {
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            border: 2px solid #d1d5db;
+            cursor: pointer;
+        }
+
+        .checkbox:checked {
+            background-color: #f97316;
+            border-color: #f97316;
+        }
+
+        .checkbox-label {
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .security-settings {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .security-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                position: static;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .profile-container {
+                padding: 1rem 0.5rem;
+            }
+
+            .profile-main {
+                padding: 1.5rem;
+            }
+
+            .order-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .security-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" onclick="navigateTo('index.html')">
+                    <div class="logo-icon">M</div>
+                    <span class="logo-text">Milan Crochet</span>
+                </div>
+
+                <nav class="nav desktop-nav">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="shop.html" class="nav-link">Shop</a>
+                    <a href="custom-orders.html" class="nav-link">Custom Orders</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions desktop-actions">
+                    <button class="action-btn" id="searchBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="action-btn" id="wishlistBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="wishlist-count" id="wishlistCount">0</span>
+                    </button>
+                    <button class="action-btn" id="userBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <button class="action-btn cart-btn" id="cartBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z"></path>
+                            <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z"></path>
+                            <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6"></path>
+                        </svg>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <nav class="mobile-nav">
+                    <a href="index.html" class="mobile-nav-link">Home</a>
+                    <a href="shop.html" class="mobile-nav-link">Shop</a>
+                    <a href="custom-orders.html" class="mobile-nav-link">Custom Orders</a>
+                    <a href="about.html" class="mobile-nav-link">About</a>
+                    <a href="contact.html" class="mobile-nav-link">Contact</a>
+                </nav>
+                <div class="mobile-actions">
+                    <button class="mobile-action-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="mobile-action-btn" id="mobileWishlistBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="wishlist-count" id="mobileWishlistCount">0</span>
+                    </button>
+                    <button class="mobile-action-btn" id="mobileUserBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <button class="mobile-action-btn mobile-cart-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z"></path>
+                            <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z"></path>
+                            <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6"></path>
+                        </svg>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1 class="profile-title">My Profile</h1>
+                <p class="profile-subtitle">Manage your account and preferences</p>
+            </div>
+
+            <div class="profile-content">
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <div class="avatar-image" id="userAvatar">M</div>
+                        <div class="avatar-upload">
+                            <input type="file" accept="image/*" id="avatarUpload">
+                            <button class="edit-avatar-btn">Change Photo</button>
+                        </div>
+                    </div>
+
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Orders</span>
+                            <span class="stat-value" id="ordersCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Wishlist</span>
+                            <span class="stat-value" id="wishlistCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Member Since</span>
+                            <span class="stat-value" id="memberSince">2024</span>
+                        </div>
+                    </div>
+
+                    <nav class="profile-nav">
+                        <button class="nav-item active" data-section="personal">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Personal Information
+                        </button>
+                        <button class="nav-item" data-section="orders">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            Order History
+                        </button>
+                        <button class="nav-item" data-section="settings">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Main Content -->
+                <div class="profile-main">
+                    <!-- Success Message -->
+                    <div id="successMessage" class="success-message">
+                        Profile updated successfully!
+                    </div>
+
+                    <!-- Personal Information Section -->
+                    <div id="personal-section" class="profile-section active">
+                        <h2 class="section-title">Personal Information</h2>
+                        
+                        <form class="profile-form" id="personalForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-input" id="fullName" placeholder="Enter your full name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-input" id="email" placeholder="Enter your email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-input" id="phone" placeholder="Enter your phone number">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date of Birth</label>
+                                    <input type="date" class="form-input" id="dob">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" class="form-input" id="address" placeholder="Enter your address">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-input" id="city" placeholder="Enter your city">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Order History Section -->
+                    <div id="orders-section" class="profile-section">
+                        <h2 class="section-title">Order History</h2>
+                        
+                        <div class="orders-list" id="ordersList">
+                            <!-- Orders will be dynamically loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div id="settings-section" class="profile-section">
+                        <h2 class="section-title">Account Settings</h2>
+                        
+                        <!-- Security Settings -->
+                        <div class="security-settings">
+                            <h3 class="settings-title">Security</h3>
+                            <p style="color: #6b7280; margin-bottom: 1rem;">Manage your password and account security</p>
+                            <div class="security-actions">
+                                <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                                <button class="btn btn-secondary" onclick="enableTwoFactor()">Enable Two-Factor Auth</button>
+                            </div>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="settings-group">
+                            <h3 class="settings-title">Notifications</h3>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="email-notifications" checked>
+                                <label for="email-notifications" class="checkbox-label">Email notifications</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="sms-notifications">
+                                <label for="sms-notifications" class="checkbox-label">SMS notifications</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="newsletter" checked>
+                                <label for="newsletter" class="checkbox-label">Newsletter subscription</label>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Settings -->
+                        <div class="settings-group">
+                            <h3 class="settings-title">Privacy</h3>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="show-profile" checked>
+                                <label for="show-profile" class="checkbox-label">Show my profile to other users</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox" id="data-collection">
+                                <label for="data-collection" class="checkbox-label">Allow data collection for improvements</label>
+                            </div>
+                        </div>
+
+                        <!-- Account Actions -->
+                        <div class="settings-group">
+                            <h3 class="settings-title">Account Actions</h3>
+                            <div class="security-actions">
+                                <button class="btn btn-secondary" onclick="exportData()">Export My Data</button>
+                                <button class="btn btn-secondary" style="background: #fef2f2; color: #dc2626; border-color: #fecaca;" onclick="deleteAccount()">Delete Account</button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="resetSettings()">Reset to Default</button>
+                            <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Preferences</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <!-- Your existing footer content -->
+    </footer>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <!-- Your existing cart sidebar -->
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script>
+        // User data management
+        const UserData = {
+            // Load user data from localStorage or use defaults
+            loadUserData: function() {
+                const savedData = localStorage.getItem('milan-crochet-user-data');
+                if (savedData) {
+                    return JSON.parse(savedData);
+                }
+                
+                // Default empty data for new users
+                return {
+                    personalInfo: {
+                        fullName: '',
+                        email: '',
+                        phone: '',
+                        dob: '',
+                        address: '',
+                        city: ''
+                    },
+                    orders: [],
+                    settings: {
+                        emailNotifications: true,
+                        smsNotifications: false,
+                        newsletter: true,
+                        showProfile: true,
+                        dataCollection: false
+                    },
+                    memberSince: new Date().getFullYear()
+                };
+            },
+
+            saveUserData: function(data) {
+                localStorage.setItem('milan-crochet-user-data', JSON.stringify(data));
+            },
+
+            // Load order data from cart history or use empty array
+            loadOrders: function() {
+                const cartHistory = localStorage.getItem('milan-crochet-order-history');
+                return cartHistory ? JSON.parse(cartHistory) : [];
+            },
+
+            saveOrders: function(orders) {
+                localStorage.setItem('milan-crochet-order-history', JSON.stringify(orders));
+            }
+        };
+
+        // Profile page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+                initializeMobileMenu();
+            }
+
+            // Load user data
+            const userData = UserData.loadUserData();
+            const userOrders = UserData.loadOrders();
+            
+            // Update statistics
+            document.getElementById('ordersCount').textContent = userOrders.length;
+            document.getElementById('wishlistCount').textContent = Wishlist ? Wishlist.getItems().length : 0;
+            document.getElementById('memberSince').textContent = userData.memberSince;
+
+            // Populate personal information form
+            if (userData.personalInfo) {
+                document.getElementById('fullName').value = userData.personalInfo.fullName || '';
+                document.getElementById('email').value = userData.personalInfo.email || '';
+                document.getElementById('phone').value = userData.personalInfo.phone || '';
+                document.getElementById('dob').value = userData.personalInfo.dob || '';
+                document.getElementById('address').value = userData.personalInfo.address || '';
+                document.getElementById('city').value = userData.personalInfo.city || '';
+            }
+
+            // Load orders
+            loadOrders(userOrders);
+
+            // Load settings
+            loadSettings(userData.settings);
+
+            // Section navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.profile-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items and sections
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+
+            // Avatar upload
+            const avatarUpload = document.getElementById('avatarUpload');
+            if (avatarUpload) {
+                avatarUpload.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            // Update avatar preview
+                            const avatar = document.getElementById('userAvatar');
+                            avatar.style.backgroundImage = `url(${e.target.result})`;
+                            avatar.textContent = '';
+                            
+                            // Save to user data
+                            const userData = UserData.loadUserData();
+                            userData.avatar = e.target.result;
+                            UserData.saveUserData(userData);
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+
+            // Form submission
+            const personalForm = document.getElementById('personalForm');
+            if (personalForm) {
+                personalForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    savePersonalInfo();
+                });
+            }
+        });
+
+        function loadOrders(orders) {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (!orders || orders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
+                        <button class="btn btn-primary" onclick="navigateTo('shop.html')" style="margin-top: 1rem;">Start Shopping</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let ordersHTML = '';
+            orders.forEach(order => {
+                let itemsHTML = '';
+                order.items.forEach(item => {
+                    itemsHTML += `
+                        <div class="order-item">
+                            <img src="${item.image}" alt="${item.name}" class="order-item-image" onerror="this.src='images/placeholder.jpg'">
+                            <div class="order-item-info">
+                                <div class="order-item-name">${item.name}</div>
+                                <div class="order-item-price">KSh ${item.price.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                ordersHTML += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-id">Order #${order.id}</div>
+                                <div class="order-date">Placed on ${new Date(order.date).toLocaleDateString()}</div>
+                            </div>
+                            <div class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+                        </div>
+                        <div class="order-items">
+                            ${itemsHTML}
+                        </div>
+                        <div class="order-total">KSh ${order.total.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+
+            ordersList.innerHTML = ordersHTML;
+        }
+
+        function loadSettings(settings) {
+            if (!settings) return;
+            
+            document.getElementById('email-notifications').checked = settings.emailNotifications;
+            document.getElementById('sms-notifications').checked = settings.smsNotifications;
+            document.getElementById('newsletter').checked = settings.newsletter;
+            document.getElementById('show-profile').checked = settings.showProfile;
+            document.getElementById('data-collection').checked = settings.dataCollection;
+        }
+
+        function savePersonalInfo() {
+            const userData = UserData.loadUserData();
+            
+            userData.personalInfo = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                dob: document.getElementById('dob').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value
+            };
+
+            UserData.saveUserData(userData);
+            showSuccessMessage('Personal information updated successfully!');
+        }
+
+        function saveSettings() {
+            const userData = UserData.loadUserData();
+            
+            userData.settings = {
+                emailNotifications: document.getElementById('email-notifications').checked,
+                smsNotifications: document.getElementById('sms-notifications').checked,
+                newsletter: document.getElementById('newsletter').checked,
+                showProfile: document.getElementById('show-profile').checked,
+                dataCollection: document.getElementById('data-collection').checked
+            };
+
+            UserData.saveUserData(userData);
+            showSuccessMessage('Settings updated successfully!');
+        }
+
+        function resetForm() {
+            const userData = UserData.loadUserData();
+            
+            document.getElementById('fullName').value = userData.personalInfo.fullName || '';
+            document.getElementById('email').value = userData.personalInfo.email || '';
+            document.getElementById('phone').value = userData.personalInfo.phone || '';
+            document.getElementById('dob').value = userData.personalInfo.dob || '';
+            document.getElementById('address').value = userData.personalInfo.address || '';
+            document.getElementById('city').value = userData.personalInfo.city || '';
+        }
+
+        function resetSettings() {
+            const defaultSettings = {
+                emailNotifications: true,
+                smsNotifications: false,
+                newsletter: true,
+                showProfile: true,
+                dataCollection: false
+            };
+            loadSettings(defaultSettings);
+        }
+
+        function showSuccessMessage(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        // Placeholder functions for settings actions
+        function changePassword() {
+            alert('Password change functionality would be implemented here.');
+        }
+
+        function enableTwoFactor() {
+            alert('Two-factor authentication setup would be implemented here.');
+        }
+
+        function exportData() {
+            alert('Data export functionality would be implemented here.');
+        }
+
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                alert('Account deletion functionality would be implemented here.');
+            }
+        }
+        
+    // Mobile menu functionality for profile page
+    function initializeMobileMenu() {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = mobileMenu.style.display === 'block';
+                mobileMenu.style.display = isOpen ? 'none' : 'block';
+                
+                // Update button icon
+                const icon = mobileMenuBtn.querySelector('svg');
+                if (isOpen) {
+                    // Show hamburger icon
+                    icon.innerHTML = `
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    `;
+                } else {
+                    // Show close icon
+                    icon.innerHTML = `
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    `;
+                }
+            });
+            
+            // Close mobile menu when clicking on links
+            const mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.style.display = 'none';
+                    const icon = mobileMenuBtn.querySelector('svg');
+                    icon.innerHTML = `
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    `;
+                });
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mobileMenu.style.display = 'none';
+                    const icon = mobileMenuBtn.querySelector('svg');
+                    icon.innerHTML = `
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    `;
+                }
+            });
+        }
+    }
+
+    // Also add the navigation function that's missing
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMobileMenu();
+        
+        // Your existing profile page code here...
+        const userData = UserData.loadUserData();
+        const userOrders = UserData.loadOrders();
+        
+        // Update statistics
+        document.getElementById('ordersCount').textContent = userOrders.length;
+        document.getElementById('wishlistCount').textContent = Wishlist ? Wishlist.getItems().length : 0;
+        document.getElementById('memberSince').textContent = userData.memberSince;
+
+        // Populate personal information form
+        if (userData.personalInfo) {
+            document.getElementById('fullName').value = userData.personalInfo.fullName || '';
+            document.getElementById('email').value = userData.personalInfo.email || '';
+            document.getElementById('phone').value = userData.personalInfo.phone || '';
+            document.getElementById('dob').value = userData.personalInfo.dob || '';
+            document.getElementById('address').value = userData.personalInfo.address || '';
+            document.getElementById('city').value = userData.personalInfo.city || '';
+        }
+
+        // Load orders
+        loadOrders(userOrders);
+        loadSettings(userData.settings);
+
+        // Section navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.profile-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items and sections
+                navItems.forEach(nav => nav.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section') + '-section';
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Avatar upload
+        const avatarUpload = document.getElementById('avatarUpload');
+        if (avatarUpload) {
+            avatarUpload.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const avatar = document.getElementById('userAvatar');
+                        avatar.style.backgroundImage = `url(${e.target.result})`;
+                        avatar.textContent = '';
+                        
+                        const userData = UserData.loadUserData();
+                        userData.avatar = e.target.result;
+                        UserData.saveUserData(userData);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // Form submission
+        const personalForm = document.getElementById('personalForm');
+        if (personalForm) {
+            personalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePersonalInfo();
+            });
+        }
+    });
+
+    // Rest of your existing profile functions...
+    // (Duplicate UserData object removed to fix redeclaration error)
+
+    function loadOrders(orders) {
+        const ordersList = document.getElementById('ordersList');
+        
+        if (!orders || orders.length === 0) {
+            ordersList.innerHTML = `
+                <div class="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <h3>No Orders Yet</h3>
+                    <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
+                    <button class="btn btn-primary" onclick="navigateTo('shop.html')" style="margin-top: 1rem;">Start Shopping</button>
+                </div>
+            `;
+            return;
+        }
+
+        let ordersHTML = '';
+        orders.forEach(order => {
+            let itemsHTML = '';
+            order.items.forEach(item => {
+                itemsHTML += `
+                    <div class="order-item">
+                        <img src="${item.image}" alt="${item.name}" class="order-item-image" onerror="this.src='images/placeholder.jpg'">
+                        <div class="order-item-info">
+                            <div class="order-item-name">${item.name}</div>
+                            <div class="order-item-price">KSh ${item.price.toLocaleString()}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            ordersHTML += `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order #${order.id}</div>
+                            <div class="order-date">Placed on ${new Date(order.date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+                    </div>
+                    <div class="order-items">
+                        ${itemsHTML}
+                    </div>
+                    <div class="order-total">KSh ${order.total.toLocaleString()}</div>
+                </div>
+            `;
+        });
+
+        ordersList.innerHTML = ordersHTML;
+    }
+
+    function loadSettings(settings) {
+        if (!settings) return;
+        
+        document.getElementById('email-notifications').checked = settings.emailNotifications;
+        document.getElementById('sms-notifications').checked = settings.smsNotifications;
+        document.getElementById('newsletter').checked = settings.newsletter;
+        document.getElementById('show-profile').checked = settings.showProfile;
+        document.getElementById('data-collection').checked = settings.dataCollection;
+    }
+
+    function savePersonalInfo() {
+        const userData = UserData.loadUserData();
+        
+        userData.personalInfo = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            dob: document.getElementById('dob').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value
+        };
+
+        UserData.saveUserData(userData);
+        showSuccessMessage('Personal information updated successfully!');
+    }
+
+    function saveSettings() {
+        const userData = UserData.loadUserData();
+        
+        userData.settings = {
+            emailNotifications: document.getElementById('email-notifications').checked,
+            smsNotifications: document.getElementById('sms-notifications').checked,
+            newsletter: document.getElementById('newsletter').checked,
+            showProfile: document.getElementById('show-profile').checked,
+            dataCollection: document.getElementById('data-collection').checked
+        };
+
+        UserData.saveUserData(userData);
+        showSuccessMessage('Settings updated successfully!');
+    }
+
+    function resetForm() {
+        const userData = UserData.loadUserData();
+        
+        document.getElementById('fullName').value = userData.personalInfo.fullName || '';
+        document.getElementById('email').value = userData.personalInfo.email || '';
+        document.getElementById('phone').value = userData.personalInfo.phone || '';
+        document.getElementById('dob').value = userData.personalInfo.dob || '';
+        document.getElementById('address').value = userData.personalInfo.address || '';
+        document.getElementById('city').value = userData.personalInfo.city || '';
+    }
+
+    function resetSettings() {
+        const defaultSettings = {
+            emailNotifications: true,
+            smsNotifications: false,
+            newsletter: true,
+            showProfile: true,
+            dataCollection: false
+        };
+        loadSettings(defaultSettings);
+    }
+
+    function showSuccessMessage(message) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        successMessage.classList.add('show');
+        
+        setTimeout(() => {
+            successMessage.classList.remove('show');
+        }, 3000);
+    }
+
+    function changePassword() {
+        alert('Password change functionality would be implemented here.');
+    }
+
+    function enableTwoFactor() {
+        alert('Two-factor authentication setup would be implemented here.');
+    }
+
+    function exportData() {
+        alert('Data export functionality would be implemented here.');
+    }
+
+    function deleteAccount() {
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            alert('Account deletion functionality would be implemented here.');
+        }
+    }
+    </script>
+</body>
+</html>
