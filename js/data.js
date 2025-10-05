@@ -1,5 +1,5 @@
 // Milan Crochet - Google Sheets Data Manager
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLdtQKjb5to_ZpoPrfWxqSOkTNVz8sLJ-nBOVLwMLKbSRhR3RO1DSmzJHmTY4z9s8/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTsEcfhLrCH77Q_-wlB31WzdKZ1zem4_FEvPvvfBH1C0zGIqFAnyl501lwsBOoeg/exec';
 
 class GoogleSheetsManager {
     constructor() {
