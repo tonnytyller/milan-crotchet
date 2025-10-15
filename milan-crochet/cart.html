@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart - Milan Crochet</title>
+  <link rel="stylesheet" href="/milan-crochet/css/style.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/header.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="header-spacer"></div>
+  <main class="container">
+    <h1>Your Cart</h1>
+    <div id="cart-items" class="grid"></div>
+    <div style="margin-top:12px">
+      <a class="btn btn-primary" href="/milan-crochet/checkout.html">Proceed to Checkout</a>
+    </div>
+  </main>
+  <script type="module" src="/milan-crochet/js/components/header.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/formatters.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/helpers.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/supabase-client.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/cart.js"></script>
+  <script type="module" src="/milan-crochet/js/pages/cart.js"></script>
+</body>
+</html>

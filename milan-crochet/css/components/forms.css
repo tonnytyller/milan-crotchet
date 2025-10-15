@@ -1,0 +1,7 @@
+form .row { display: grid; gap: 12px; }
+@media (min-width: 700px) { form .row-2 { grid-template-columns: repeat(2, 1fr); } }
+
+.input { display: grid; gap: 6px; }
+.input label { font-size: 14px; color: var(--color-gray-700); }
+.input input, .input select, .input textarea { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--color-gray-300); background: white; }
+.input input:focus, .input select:focus, .input textarea:focus { outline: none; border-color: var(--color-gray-500); }

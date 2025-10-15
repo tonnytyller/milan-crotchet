@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile - Milan Crochet</title>
+  <link rel="stylesheet" href="/milan-crochet/css/style.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/header.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/forms.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="header-spacer"></div>
+  <main class="container">
+    <h1>Profile</h1>
+    <section class="card" style="padding: 16px">
+      <form id="profile-form" class="row row-2">
+        <div class="input"><label>Full Name</label><input name="full_name" required></div>
+        <div class="input"><label>Email</label><input name="email" type="email" required></div>
+        <div class="input"><label>Phone</label><input name="phone" required></div>
+        <div style="grid-column: 1 / -1"><button class="btn btn-primary" type="submit">Save</button></div>
+      </form>
+      <div style="margin-top: 12px"><button id="logout" class="btn btn-outline">Logout</button></div>
+    </section>
+  </main>
+  <script type="module" src="/milan-crochet/js/components/header.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/supabase-client.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/auth.js"></script>
+  <script type="module" src="/milan-crochet/js/pages/profile.js"></script>
+</body>
+</html>

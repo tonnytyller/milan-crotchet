@@ -1,0 +1,8 @@
+.site-header { position: fixed; top: 0; left: 0; right: 0; height: 72px; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--color-gray-200); z-index: 30; }
+.site-header .container { height: 72px; display: flex; align-items: center; justify-content: space-between; }
+.site-header .brand { display: flex; align-items: center; gap: 10px; }
+.site-header .brand .logo { width: 36px; height: 36px; border-radius: 8px; background: var(--gradient-primary); box-shadow: var(--shadow-card); }
+.site-header .brand .title { font-weight: 800; letter-spacing: 0.5px; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.site-header nav { display: flex; gap: 16px; align-items: center; }
+.site-header .cart { position: relative; }
+.site-header .cart .badge { position: absolute; top: -6px; right: -6px; }
