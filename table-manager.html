@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Manager - Milan Crotchet</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; border: 1px solid #ccc; background: #f5f5f5; }
+        button:hover { background: #e5e5e5; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .info { color: blue; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        #output { margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ccc; border-radius: 5px; white-space: pre-wrap; min-height: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Supabase Table Manager</h1>
+    
+    <div class="section">
+        <h2>1. Check Current Status</h2>
+        <button id="checkTables">Check Which Tables Exist</button>
+        <button id="checkUser">Check Current User</button>
+    </div>
+
+    <div class="section">
+        <h2>2. Test Profile System</h2>
+        <button id="testCreateProfile">Test Create Profile</button>
+        <button id="testGetProfile">Test Get Profile</button>
+    </div>
+
+    <div class="section">
+        <h2>3. Database Info</h2>
+        <button id="checkDatabase">Check Database Connection</button>
+    </div>
+
+    <div id="output">Click buttons above to check your database status...</div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Logging function
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            let styledMessage = '';
+            
+            if (type === 'success') {
+                styledMessage = `<div style="color: green; font-weight: bold;">✅ ${timestamp}: ${message}</div>`;
+            } else if (type === 'error') {
+                styledMessage = `<div style="color: red; font-weight: bold;">❌ ${timestamp}: ${message}</div>`;
+            } else if (type === 'warning') {
+                styledMessage = `<div style="color: orange; font-weight: bold;">⚠️ ${timestamp}: ${message}</div>`;
+            } else {
+                styledMessage = `<div>${timestamp}: ${message}</div>`;
+            }
+            
+            output.innerHTML += styledMessage;
+            output.scrollTop = output.scrollHeight;
+            console.log(`[${type}] ${message}`);
+        }
+
+        // Check which tables exist
+        async function checkTables() {
+            log('Checking which tables exist...', 'info');
+            
+            const tablesToCheck = [
+                'profiles', 
+                'orders', 
+                'order_items', 
+                'wishlists', 
+                'cart_items',
+                'products',
+                'delivery_zones'
+            ];
+            
+            let existingTables = 0;
+            
+            for (const tableName of tablesToCheck) {
+                try {
+                    const { data, error } = await supabase
+                        .from(tableName)
+                        .select('*')
+                        .limit(1);
+
+                    if (error) {
+                        if (error.message.includes('does not exist')) {
+                            log(`Table "${tableName}" does not exist`, 'error');
+                        } else if (error.message.includes('permission denied')) {
+                            log(`Table "${tableName}" exists but no access`, 'warning');
+                        } else {
+                            log(`Table "${tableName}" - Error: ${error.message}`, 'warning');
+                        }
+                    } else {
+                        log(`Table "${tableName}" exists and is accessible`, 'success');
+                        existingTables++;
+                    }
+                } catch (error) {
+                    log(`Table "${tableName}" - Exception: ${error.message}`, 'error');
+                }
+                
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            log(`Found ${existingTables} out of ${tablesToCheck.length} tables`, 'info');
+        }
+
+        // Check current user
+        async function checkCurrentUser() {
+            log('Checking current user authentication...', 'info');
+            
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    log(`Authentication error: ${error.message}`, 'error');
+                    return;
+                }
+                
+                if (user) {
+                    log(`User is logged in: ${user.email}`, 'success');
+                    log(`User ID: ${user.id}`, 'info');
+                    log(`Account created: ${new Date(user.created_at).toLocaleString()}`, 'info');
+                    
+                    // Check if user has a profile
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profileError) {
+                        if (profileError.message.includes('does not exist')) {
+                            log('Profiles table does not exist', 'error');
+                        } else if (profileError.message.includes('No rows found')) {
+                            log('User profile does not exist in profiles table', 'warning');
+                        } else {
+                            log(`Profile error: ${profileError.message}`, 'warning');
+                        }
+                    } else {
+                        log('User profile exists in database', 'success');
+                    }
+                } else {
+                    log('No user is currently logged in', 'error');
+                    log('Please login first at login.html', 'info');
+                }
+            } catch (error) {
+                log(`Error checking user: ${error.message}`, 'error');
+            }
+        }
+
+        // Test profile creation
+        async function testProfileCreation() {
+            log('Testing profile creation...', 'info');
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                log('No user logged in. Please login first.', 'error');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email.split('@')[0],
+                        email: user.email,
+                        created_at: new Date().toISOString()
+                    })
+                    .select();
+
+                if (error) {
+                    if (error.message.includes('duplicate key')) {
+                        log('Profile already exists for this user', 'warning');
+                    } else if (error.message.includes('does not exist')) {
+                        log('PROFILES TABLE DOES NOT EXIST - This is the main problem!', 'error');
+                        log('You need to create the profiles table in Supabase SQL Editor', 'error');
+                    } else {
+                        log(`Profile creation error: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('Profile created successfully!', 'success');
+                    log(`Profile data: ${JSON.stringify(data, null, 2)}`, 'info');
+                }
+            } catch (error) {
+                log(`Profile creation exception: ${error.message}`, 'error');
+            }
+        }
+
+        // Test getting profile
+        async function testGetProfile() {
+            log('Testing profile retrieval...', 'info');
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                log('No user logged in', 'error');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    if (error.message.includes('does not exist')) {
+                        log('PROFILES TABLE DOES NOT EXIST', 'error');
+                    } else if (error.message.includes('No rows found')) {
+                        log('No profile found for current user', 'warning');
+                    } else {
+                        log(`Profile retrieval error: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('Profile retrieved successfully!', 'success');
+                    log(`Profile data: ${JSON.stringify(data, null, 2)}`, 'info');
+                }
+            } catch (error) {
+                log(`Profile retrieval exception: ${error.message}`, 'error');
+            }
+        }
+
+        // Check database connection
+        async function checkDatabaseConnection() {
+            log('Testing Supabase connection...', 'info');
+            
+            try {
+                // Simple query to test connection
+                const { data, error } = await supabase.from('profiles').select('count').limit(1);
+                
+                if (error) {
+                    if (error.message.includes('does not exist')) {
+                        log('Connection successful but profiles table missing', 'warning');
+                    } else {
+                        log(`Connection error: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('Supabase connection successful!', 'success');
+                }
+            } catch (error) {
+                log(`Connection exception: ${error.message}`, 'error');
+            }
+        }
+
+        // Setup event listeners when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Table Manager loaded successfully!', 'success');
+            log('Click the buttons to check your database status.', 'info');
+            
+            // Add event listeners to buttons
+            document.getElementById('checkTables').addEventListener('click', checkTables);
+            document.getElementById('checkUser').addEventListener('click', checkCurrentUser);
+            document.getElementById('testCreateProfile').addEventListener('click', testProfileCreation);
+            document.getElementById('testGetProfile').addEventListener('click', testGetProfile);
+            document.getElementById('checkDatabase').addEventListener('click', checkDatabaseConnection);
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            log(`JavaScript Error: ${e.message}`, 'error');
+            log(`File: ${e.filename} Line: ${e.lineno}`, 'error');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Your existing meta tags and links -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milan Crochet - Handcrafted with Love</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- REPLACE your current Supabase initialization with this -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    console.log('🔄 Initializing Supabase...');
+    
+    const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+    
+    // Initialize Supabase properly
+    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Test if it's working
+    console.log('Supabase client:', window.supabase);
+    console.log('Has .from method:', typeof window.supabase.from === 'function');
+    console.log('Has .auth method:', typeof window.supabase.auth === 'function');
+    
+    console.log('✅ Supabase initialized successfully');
+    </script>
+    
+    </head>
+<body>
+    <div class="admin-login-container">
+        <div class="admin-login-card">
+            <div class="admin-logo">
+                <div class="logo-icon">M</div>
+                <h1>Milan Crochet</h1>
+                <p>Admin Panel</p>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="admin@milancrochet.co.ke"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Sign In to Admin Panel
+                </button>
+            </form>
+
+            <div class="back-to-store">
+                <a href="../index.html">← Back to Store</a>
+            </div>
+        </div>
+    </div>
+    <script>
+    console.log('🚀 Starting admin login...');
+
+    // Show alert message
+    function showAlert(message, type = 'error') {
+        const alertDiv = document.getElementById('alert');
+        if (alertDiv) {
+            alertDiv.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+    }
+
+    // Check if user is already logged in
+    function checkExistingSession() {
+        const adminToken = localStorage.getItem('admin_token');
+        if (adminToken) {
+            try {
+                const session = JSON.parse(adminToken);
+                if (session && session.isAdmin) {
+                    console.log('🔄 Existing admin session found, redirecting...');
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                console.error('Error parsing admin token:', error);
+                localStorage.removeItem('admin_token');
+            }
+        }
+    }
+
+    // Handle login form submission
+    async function handleLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('loginBtn');
+
+        // Basic validation
+        if (!email || !password) {
+            showAlert('Please fill in all fields');
+            return;
+        }
+
+        // Show loading state
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Signing in...';
+
+        try {
+            console.log('🔐 Attempting admin login for:', email);
+            
+            // Use the existing Supabase instance that's already working
+            const { data: adminUser, error: adminError } = await window.supabase
+                .from('admin_users')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (adminError) {
+                console.error('Admin user query error:', adminError);
+                
+                if (adminError.code === 'PGRST116') {
+                    showAlert('Invalid admin credentials');
+                } else {
+                    showAlert('Database error. Please try again.');
+                }
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In to Admin Panel';
+                return;
+            }
+
+            if (!adminUser) {
+                showAlert('Invalid admin credentials');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In to Admin Panel';
+                return;
+            }
+
+            console.log('👤 Admin user found:', adminUser.name);
+
+            // Simple password check
+            if (password === adminUser.password_hash) {
+                // Create admin session
+                const adminSession = {
+                    id: adminUser.id,
+                    email: adminUser.email,
+                    name: adminUser.name,
+                    role: adminUser.role,
+                    isAdmin: true,
+                    loginTime: new Date().toISOString()
+                };
+
+                // Store session
+                localStorage.setItem('admin_token', JSON.stringify(adminSession));
+                localStorage.setItem('admin_last_login', new Date().toISOString());
+
+                console.log('✅ Login successful, redirecting to dashboard...');
+                showAlert('Login successful! Redirecting...', 'success');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                console.log('❌ Invalid password');
+                showAlert('Invalid password');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In to Admin Panel';
+            }
+
+        } catch (error) {
+            console.error('Login error:', error);
+            showAlert('Login failed. Please try again.');
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign In to Admin Panel';
+        }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('✅ Admin login page ready');
+        
+        // Check if Supabase is available
+        if (!window.supabase) {
+            showAlert('Database connection not available. Please go to the main site first.');
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Go to Main Site First';
+            }
+            return;
+        }
+
+        console.log('✅ Supabase is available:', window.supabase);
+
+        // Set up event listeners
+        const loginForm = document.getElementById('adminLoginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+
+        // Check for existing session
+        checkExistingSession();
+
+        console.log('✅ Admin login page initialized successfully');
+    });
+</script>
+
+    <style>
+        .admin-login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3f4f6 100%);
+            padding: 1rem;
+        }
+
+        .admin-login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .admin-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-logo .logo-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .admin-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+
+        .admin-logo p {
+            color: #6b7280;
+            margin: 0.5rem 0 0 0;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+
+        .back-to-store {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .back-to-store a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-store a:hover {
+            color: #f97316;
+        }
+    </style>
+</head>
+</body>
+</html>

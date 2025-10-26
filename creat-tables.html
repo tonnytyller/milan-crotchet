@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Tables - Milan Crotchet</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { padding: 12px 20px; margin: 10px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; }
+        .primary { background: #f97316; color: white; }
+        .secondary { background: #6b7280; color: white; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        #output { margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; white-space: pre-wrap; min-height: 300px; }
+        .step { margin: 20px 0; padding: 15px; border-left: 4px solid #f97316; background: #fef3f2; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Create Database Tables</h1>
+    
+    <div class="step">
+        <h2>Step 1: Create Essential Tables</h2>
+        <p>We'll create just the profiles table first to get your profile page working.</p>
+        <button class="primary" onclick="createProfilesTable()">Create Profiles Table</button>
+    </div>
+
+    <div class="step">
+        <h2>Step 2: Test Profile System</h2>
+        <p>After creating the table, test if profiles work.</p>
+        <button class="secondary" onclick="testProfileSystem()">Test Profile System</button>
+    </div>
+
+    <div class="step">
+        <h2>Step 3: Manual SQL (If Needed)</h2>
+        <p>If the automatic method fails, use this SQL in Supabase.</p>
+        <button class="secondary" onclick="showManualSQL()">Show Manual SQL</button>
+    </div>
+
+    <div id="output">Ready to create tables... Click "Create Profiles Table" to start.</div>
+
+    <script>
+        const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            let icon = '📝';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            output.innerHTML += `<div>${icon} ${timestamp}: ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function createProfilesTable() {
+            log('Starting profiles table creation...', 'info');
+            
+            try {
+                // First, let's try the SQL function approach
+                log('Attempting to create table via SQL function...', 'info');
+                
+                const { data, error } = await supabase.rpc('exec_sql', {
+                    query: `
+                        CREATE TABLE profiles (
+                            id UUID REFERENCES auth.users PRIMARY KEY,
+                            username TEXT,
+                            full_name TEXT,
+                            phone TEXT,
+                            date_of_birth DATE,
+                            address TEXT,
+                            city TEXT,
+                            created_at TIMESTAMPTZ DEFAULT NOW(),
+                            updated_at TIMESTAMPTZ DEFAULT NOW()
+                        );
+                        
+                        ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+                        
+                        CREATE POLICY "Users can manage own profile" ON profiles 
+                        FOR ALL USING (auth.uid() = id);
+                    `
+                });
+
+                if (error) {
+                    log(`SQL function approach failed: ${error.message}`, 'warning');
+                    await createProfilesTableAlternative();
+                } else {
+                    log('Profiles table created successfully via SQL function!', 'success');
+                    await setupAutoProfileCreation();
+                }
+                
+            } catch (error) {
+                log(`Exception: ${error.message}`, 'error');
+                await createProfilesTableAlternative();
+            }
+        }
+
+        async function createProfilesTableAlternative() {
+            log('Trying alternative table creation method...', 'info');
+            
+            // Since we can't execute SQL directly from the browser, we'll use a different approach
+            // We'll rely on the fact that Supabase often creates tables automatically when needed
+            
+            try {
+                log('Testing if we can create a profile directly...', 'info');
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    log('Please login first to test profile creation', 'error');
+                    return;
+                }
+
+                // Try to insert a profile - this might auto-create the table
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email.split('@')[0],
+                        email: user.email,
+                        created_at: new Date().toISOString()
+                    })
+                    .select();
+
+                if (error) {
+                    if (error.message.includes('does not exist')) {
+                        log('PROFILES TABLE DOES NOT EXIST AND CANNOT BE CREATED AUTOMATICALLY', 'error');
+                        log('You need to manually create the table using SQL', 'error');
+                        showManualSQL();
+                    } else {
+                        log(`Insert error: ${error.message}`, 'warning');
+                    }
+                } else {
+                    log('Profile created successfully! Table might have been auto-created', 'success');
+                }
+                
+            } catch (error) {
+                log(`Alternative method exception: ${error.message}`, 'error');
+            }
+        }
+
+        async function setupAutoProfileCreation() {
+            log('Setting up auto profile creation...', 'info');
+            
+            try {
+                const { data, error } = await supabase.rpc('exec_sql', {
+                    query: `
+                        CREATE OR REPLACE FUNCTION public.handle_new_user()
+                        RETURNS TRIGGER AS $$
+                        BEGIN
+                            INSERT INTO public.profiles (id, full_name, username, email)
+                            VALUES (
+                                NEW.id,
+                                COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+                                split_part(NEW.email, '@', 1),
+                                NEW.email
+                            );
+                            RETURN NEW;
+                        END;
+                        $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+                        DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+                        CREATE TRIGGER on_auth_user_created
+                            AFTER INSERT ON auth.users
+                            FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+                    `
+                });
+
+                if (error) {
+                    log(`Auto-profile setup failed: ${error.message}`, 'warning');
+                } else {
+                    log('Auto profile creation setup complete!', 'success');
+                }
+                
+            } catch (error) {
+                log(`Auto-profile setup exception: ${error.message}`, 'warning');
+            }
+        }
+
+        async function testProfileSystem() {
+            log('Testing profile system...', 'info');
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                log('Please login first', 'error');
+                return;
+            }
+
+            try {
+                // Try to get profile
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    if (error.message.includes('does not exist')) {
+                        log('PROFILES TABLE STILL DOES NOT EXIST', 'error');
+                    } else if (error.message.includes('No rows found')) {
+                        log('Table exists but no profile found for current user', 'warning');
+                        log('Trying to create profile...', 'info');
+                        await createUserProfile(user);
+                    } else {
+                        log(`Profile test error: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('PROFILE SYSTEM WORKING!', 'success');
+                    log(`Profile data: ${JSON.stringify(data, null, 2)}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`Profile test exception: ${error.message}`, 'error');
+            }
+        }
+
+        async function createUserProfile(user) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email.split('@')[0],
+                        email: user.email,
+                        created_at: new Date().toISOString()
+                    })
+                    .select();
+
+                if (error) {
+                    log(`Profile creation failed: ${error.message}`, 'error');
+                } else {
+                    log('Profile created manually!', 'success');
+                log(`Profile data: ${JSON.stringify(data, null, 2)}`, 'info');
+                log('🎉 YOUR PROFILE PAGE SHOULD NOW WORK!', 'success');
+                log('Go test your profile.html page now!', 'success');
+                }
+            } catch (error) {
+                log(`Profile creation exception: ${error.message}`, 'error');
+            }
+        }
+
+        function showManualSQL() {
+            const sql = `-- COPY AND PASTE THIS IN SUPABASE SQL EDITOR:
+-- =============================================
+-- CREATE PROFILES TABLE MANUALLY
+-- =============================================
+
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users PRIMARY KEY,
+  username TEXT,
+  full_name TEXT,
+  phone TEXT,
+  date_of_birth DATE,
+  address TEXT,
+  city TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable security
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Allow users to manage their own profile
+CREATE POLICY "Users can manage own profile" ON profiles 
+FOR ALL USING (auth.uid() = id);
+
+-- Auto-create profiles for new users
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, username, email)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+    split_part(NEW.email, '@', 1),
+    NEW.email
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create the trigger
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- Verify table was created
+SELECT 'Profiles table created successfully!' as status;`;
+
+            log('MANUAL SQL REQUIRED:', 'error');
+            log('Copy and paste this SQL into Supabase SQL Editor:', 'error');
+            log(sql, 'info');
+        }
+
+        // Initialize
+        log('Table creator loaded. Click "Create Profiles Table" to start.', 'info');
+    </script>
+</body>
+</html>

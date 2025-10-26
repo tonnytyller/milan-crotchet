@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Checkout - Milan Crochet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .product:hover {
+            background: #f9f9f9;
+        }
+        .product.selected {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+        .checkout-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧶 Test Order Creator</h1>
+        <p>Create test orders for your admin panel</p>
+
+        <div class="status info">
+            <strong>Instructions:</strong> Select products below, fill customer info, and click "Create Order"
+        </div>
+
+        <h3>Select Products:</h3>
+        <div class="product" onclick="selectProduct(this, 'Baby Blanket', 85)">
+            <h4>👶 Baby Blanket</h4>
+            <p>KSh 85</p>
+        </div>
+
+        <div class="product" onclick="selectProduct(this, 'Crochet Bag', 45)">
+            <h4>👜 Crochet Bag</h4>
+            <p>KSh 45</p>
+        </div>
+
+        <div class="product" onclick="selectProduct(this, 'Custom Hat', 35)">
+            <h4>🧢 Custom Hat</h4>
+            <p>KSh 35</p>
+        </div>
+
+        <div class="product" onclick="selectProduct(this, 'Kitchen Set', 120)">
+            <h4>🍳 Kitchen Set</h4>
+            <p>KSh 120</p>
+        </div>
+
+        <div id="orderSummary" style="margin: 2rem 0; padding: 1rem; border: 2px solid #f97316; border-radius: 8px; background: #fff7ed;">
+            <h3>📋 Order Summary</h3>
+            <div id="orderItems">No products selected</div>
+            <p><strong>Total: KSh <span id="orderTotal">0</span></strong></p>
+        </div>
+
+        <h3>👤 Customer Information</h3>
+        <input type="text" id="customerName" placeholder="Customer Name" value="Test Customer">
+        <input type="email" id="customerEmail" placeholder="Email" value="test@email.com">
+        <input type="tel" id="customerPhone" placeholder="Phone" value="+254 700 000 000">
+
+        <button class="checkout-btn" onclick="createOrder()" id="createBtn">✅ Create Test Order</button>
+
+        <div id="statusMessage" class="status" style="display: none;"></div>
+
+        <div class="status info">
+            <strong>After creating orders:</strong> Check your admin panel at <code>/admin/dashboard.html</code> to see if they appear!
+        </div>
+    </div>
+
+    <script>
+        let selectedProducts = [];
+
+        function selectProduct(element, productName, price) {
+            const index = selectedProducts.findIndex(p => p.name === productName);
+            
+            if (index > -1) {
+                // Remove if already selected
+                selectedProducts.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                // Add if not selected
+                selectedProducts.push({
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+                element.classList.add('selected');
+            }
+            
+            updateOrderDisplay();
+        }
+
+        function updateOrderDisplay() {
+            const orderItems = document.getElementById('orderItems');
+            const orderTotal = document.getElementById('orderTotal');
+            const createBtn = document.getElementById('createBtn');
+            
+            if (selectedProducts.length === 0) {
+                orderItems.innerHTML = 'No products selected';
+                orderTotal.textContent = '0';
+                createBtn.disabled = true;
+                return;
+            }
+            
+            let total = 0;
+            let html = '';
+            
+            selectedProducts.forEach(item => {
+                total += item.price;
+                html += `<div>✅ ${item.name} - KSh ${item.price}</div>`;
+            });
+            
+            orderItems.innerHTML = html;
+            orderTotal.textContent = total;
+            createBtn.disabled = false;
+        }
+
+        async function createOrder() {
+            if (selectedProducts.length === 0) {
+                showStatus('Please select at least one product', 'error');
+                return;
+            }
+
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+
+            if (!customerName.trim()) {
+                showStatus('Please enter customer name', 'error');
+                return;
+            }
+
+            showStatus('🔄 Creating order in database...', 'info');
+
+            try {
+                // Calculate total
+                const total = selectedProducts.reduce((sum, item) => sum + item.price, 0);
+                
+                // Generate order number
+                const orderNumber = 'TEST-' + Date.now();
+
+                // Prepare the order data
+                const orderData = {
+                    order_number: orderNumber,
+                    client_name: customerName,
+                    client_email: customerEmail,
+                    client_phone: customerPhone,
+                    total_amount: total,
+                    status: 'pending',
+                    order_date: new Date().toISOString().split('T')[0],
+                    payment_method: 'cash',
+                    payment_status: 'pending',
+                    payment_confirmed: false,
+                    notes: 'Test order from checkout page'
+                };
+
+                // Show what we're sending
+                console.log('📦 Order data:', orderData);
+                console.log('📦 Order items:', selectedProducts);
+
+                // For now, just show success - we'll implement actual database call later
+                showStatus(`✅ Order ${orderNumber} ready! Total: KSh ${total} (Database connection needed)`, 'success');
+                
+                // Reset for next order
+                selectedProducts = [];
+                document.querySelectorAll('.product').forEach(p => p.classList.remove('selected'));
+                updateOrderDisplay();
+
+            } catch (error) {
+                console.error('Order error:', error);
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('statusMessage');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        // Initialize
+        updateOrderDisplay();
+    </script>
+</body>
+</html>

@@ -8,8 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Profile Page Styles */
+        /* Profile Page Styles - KEEPING YOUR EXISTING STYLES */
         .profile-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -67,34 +68,20 @@
             color: white;
             font-size: 2.5rem;
             font-weight: 600;
+            background-size: cover;
+            background-position: center;
         }
 
-        .avatar-upload {
-            position: relative;
-            display: inline-block;
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
         }
 
-        .avatar-upload input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .edit-avatar-btn {
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            color: #374151;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+        .user-email {
+            color: #6b7280;
             font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .edit-avatar-btn:hover {
-            background: #e5e7eb;
         }
 
         .user-stats {
@@ -179,7 +166,35 @@
             border-bottom: 2px solid #f3f4f6;
         }
 
-        /* Form Styles */
+        /* View-Only Info Styles */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-value {
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            color: #111827;
+            font-size: 1rem;
+        }
+
+        /* Form Styles for Settings */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -413,6 +428,20 @@
             display: block;
         }
 
+        /* Error Message */
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 968px) {
             .profile-content {
@@ -424,6 +453,10 @@
             }
 
             .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -449,6 +482,41 @@
             .security-actions {
                 flex-direction: column;
             }
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ea580c;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -562,10 +630,8 @@
                 <div class="profile-sidebar">
                     <div class="profile-avatar">
                         <div class="avatar-image" id="userAvatar">M</div>
-                        <div class="avatar-upload">
-                            <input type="file" accept="image/*" id="avatarUpload">
-                            <button class="edit-avatar-btn">Change Photo</button>
-                        </div>
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-email" id="userEmail">Loading...</div>
                     </div>
 
                     <div class="user-stats">
@@ -578,8 +644,12 @@
                             <span class="stat-value" id="wishlistCount">0</span>
                         </div>
                         <div class="stat-item">
+                            <span class="stat-label">Total Spent</span>
+                            <span class="stat-value" id="totalSpent">KSh 0</span>
+                        </div>
+                        <div class="stat-item">
                             <span class="stat-label">Member Since</span>
-                            <span class="stat-value" id="memberSince">2024</span>
+                            <span class="stat-value" id="memberSince">Loading...</span>
                         </div>
                     </div>
 
@@ -605,7 +675,7 @@
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                             </svg>
-                            Settings
+                            Settings & Edit Profile
                         </button>
                     </nav>
                 </div>
@@ -617,46 +687,48 @@
                         Profile updated successfully!
                     </div>
 
-                    <!-- Personal Information Section -->
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="error-message">
+                        Error updating profile!
+                    </div>
+
+                    <!-- Personal Information Section (VIEW ONLY) -->
                     <div id="personal-section" class="profile-section active">
                         <h2 class="section-title">Personal Information</h2>
                         
-                        <form class="profile-form" id="personalForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-input" id="fullName" placeholder="Enter your full name">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-input" id="email" placeholder="Enter your email">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-input" id="phone" placeholder="Enter your phone number">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Date of Birth</label>
-                                    <input type="date" class="form-input" id="dob">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Address</label>
-                                    <input type="text" class="form-input" id="address" placeholder="Enter your address">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">City</label>
-                                    <input type="text" class="form-input" id="city" placeholder="Enter your city">
-                                </div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">Full Name</label>
+                                <div class="info-value" id="displayFullName">Loading...</div>
                             </div>
+                            <div class="info-item">
+                                <label class="info-label">Email Address</label>
+                                <div class="info-value" id="displayEmail">Loading...</div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Phone Number</label>
+                                <div class="info-value" id="displayPhone">Loading...</div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Date of Birth</label>
+                                <div class="info-value" id="displayDob">Loading...</div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Address</label>
+                                <div class="info-value" id="displayAddress">Loading...</div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">City</label>
+                                <div class="info-value" id="displayCity">Loading...</div>
+                            </div>
+                        </div>
 
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                        </form>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-primary" onclick="switchToEditMode()">Edit Profile</button>
+                        </div>
                     </div>
 
-                    <!-- Order History Section -->
+                    <!-- Order History Section (VIEW ONLY) -->
                     <div id="orders-section" class="profile-section">
                         <h2 class="section-title">Order History</h2>
                         
@@ -665,10 +737,84 @@
                         </div>
                     </div>
 
-                    <!-- Settings Section -->
+                    <!-- Settings & Edit Profile Section (EDIT MODE) -->
                     <div id="settings-section" class="profile-section">
-                        <h2 class="section-title">Account Settings</h2>
+                        <h2 class="section-title">Settings & Edit Profile</h2>
                         
+    
+    <!-- Personal Information Form -->
+    <div class="settings-group">
+        <h3 class="settings-title">Edit Personal Information</h3>
+        <form class="profile-form" id="personalForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="editFullName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="editPhone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" class="form-input" id="editDob">
+                </div>
+            </div>
+
+            <!-- LOCATION SECTION -->
+<div class="form-group">
+    <h4 class="settings-title" style="font-size: 1.125rem; margin-bottom: 1rem;">Location Information</h4>
+    
+    <div class="location-selector">
+        <!-- County Selection -->
+        <div class="form-group">
+            <label class="form-label">County</label>
+            <select class="form-input" id="profileCountySelect" required>
+                <option value="">Select County</option>
+                <!-- Counties will be loaded by JavaScript -->
+            </select>
+        </div>
+
+        <!-- Town Selection -->
+        <div class="form-group">
+            <label class="form-label">Town/Area</label>
+            <select class="form-input" id="profileTownSelect" disabled required>
+                <option value="">Select Town</option>
+                <!-- Towns will be loaded based on county -->
+            </select>
+        </div>
+
+        <!-- Specific Address -->
+        <div class="form-group">
+            <label class="form-label">Address Line</label>
+            <input type="text" class="form-input" id="profileAddressLine" 
+                   placeholder="House number, street, building" required>
+        </div>
+
+        <!-- GPS Location Button -->
+        <div class="form-group">
+            <button type="button" class="btn btn-secondary" id="profileGpsLocationBtn" style="width: 100%;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Use My Current Location
+            </button>
+            <div class="location-error" id="profileLocationError" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="resetEditForm()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="saveButton">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
                         <!-- Security Settings -->
                         <div class="security-settings">
                             <h3 class="settings-title">Security</h3>
@@ -710,219 +856,589 @@
                         </div>
 
                         <!-- Account Actions -->
-                        <div class="settings-group">
-                            <h3 class="settings-title">Account Actions</h3>
-                            <div class="security-actions">
-                                <button class="btn btn-secondary" onclick="exportData()">Export My Data</button>
-                                <button class="btn btn-secondary" style="background: #fef2f2; color: #dc2626; border-color: #fecaca;" onclick="deleteAccount()">Delete Account</button>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="resetSettings()">Reset to Default</button>
-                            <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Preferences</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Account Actions -->
+<div class="settings-group">
+    <h3 class="settings-title">Account Actions</h3>
+    <div class="security-actions">
+        <button class="btn btn-secondary" onclick="exportData()">Export My Data</button>
+        <button class="btn btn-secondary" style="background: #fef3f2; color: #f97316; border-color: #fed7d5;" onclick="logoutFromProfile()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16,17 21,12 16,7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Logout
+        </button>
+    </div>
+</div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
         <!-- Your existing footer content -->
     </footer>
-
-    <!-- Shopping Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <!-- Your existing cart sidebar -->
-    </div>
-
+    
     <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/wishlist.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/user-menu.js"></script>
+    <script src="js/main.js"></script>
+
     <script>
-        // User data management
-        const UserData = {
-            // Load user data from localStorage or use defaults
-            loadUserData: function() {
-                const savedData = localStorage.getItem('milan-crochet-user-data');
-                if (savedData) {
-                    return JSON.parse(savedData);
-                }
-                
-                // Default empty data for new users
-                return {
-                    personalInfo: {
-                        fullName: '',
-                        email: '',
-                        phone: '',
-                        dob: '',
-                        address: '',
-                        city: ''
-                    },
-                    orders: [],
-                    settings: {
-                        emailNotifications: true,
-                        smsNotifications: false,
-                        newsletter: true,
-                        showProfile: true,
-                        dataCollection: false
-                    },
-                    memberSince: new Date().getFullYear()
-                };
-            },
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            saveUserData: function(data) {
-                localStorage.setItem('milan-crochet-user-data', JSON.stringify(data));
-            },
+    // AUTHENTICATION GUARD
+    async function checkAuthentication() {
+        console.log('🔐 Checking authentication status...');
+        
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error) {
+            console.error('Auth check error:', error);
+            redirectToLogin();
+            return null;
+        }
+        
+        if (!user) {
+            console.log('❌ No user found, redirecting to login...');
+            redirectToLogin();
+            return null;
+        }
+        
+        console.log('✅ User authenticated:', user.email);
+        return user;
+    }
 
-            // Load order data from cart history or use empty array
-            loadOrders: function() {
-                const cartHistory = localStorage.getItem('milan-crochet-order-history');
-                return cartHistory ? JSON.parse(cartHistory) : [];
-            },
-
-            saveOrders: function(orders) {
-                localStorage.setItem('milan-crochet-order-history', JSON.stringify(orders));
+    function redirectToLogin() {
+    // Create colorful custom alert
+    const colorfulAlert = document.createElement('div');
+    colorfulAlert.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        z-index: 10000;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        min-width: 300px;
+        max-width: 400px;
+        animation: fadeInScale 0.5s ease-out;
+    `;
+    
+    colorfulAlert.innerHTML = `
+        <div style="margin-bottom: 20px;">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #ffd700;">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+            </svg>
+        </div>
+        <h3 style="margin: 0 0 10px 0; font-size: 1.5rem; font-weight: 600; color: white;">
+            Access Required
+        </h3>
+        <p style="margin: 0 0 20px 0; font-size: 1rem; opacity: 0.9; line-height: 1.5;">
+            Please log in to access your personalized profile and settings
+        </p>
+        <button onclick="proceedToLogin()" style="
+            background: linear-gradient(135deg, #f97316 0%, #f97316 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'">
+            🔐 Login Now
+        </button>
+    `;
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(backdrop);
+    document.body.appendChild(colorfulAlert);
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
             }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Add this function to handle the button click
+function proceedToLogin() {
+    window.location.href = 'login.html?redirect=profile';
+}
+
+    // Utility Functions
+    function md5(string) {
+        let hash = 0;
+        for (let i = 0; i < string.length; i++) {
+            const char = string.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
+    }
+
+    function getProfilePhoto(email, name) {
+        const hash = md5(email.trim().toLowerCase());
+        const gravatarUrl = `https://www.gravatar.com/avatar/${hash}?d=identicon&s=120`;
+        
+        const getInitials = (name) => {
+            if (!name) return 'U';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
         };
+        
+        return {
+            gravatar: gravatarUrl,
+            initials: getInitials(name)
+        };
+    }
 
-        // Profile page functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize mobile menu
-            if (typeof initializeMobileMenu === 'function') {
-                initializeMobileMenu();
-            }
+    function formatDate(dateString) {
+        if (!dateString) return 'Not set';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
 
-            // Load user data
-            const userData = UserData.loadUserData();
-            const userOrders = UserData.loadOrders();
+    function formatCurrency(amount) {
+        return 'KSh ' + (amount || 0).toLocaleString();
+    }
+
+    // Main Profile Management
+    class ProfileManager {
+        constructor() {
+            this.currentUser = null;
+            this.userProfile = null;
+            this.isInitialized = false;
+        }
+
+        async init() {
+            if (this.isInitialized) return true;
+
+            try {
+                console.log('🔐 Checking authentication...');
+                
+                // Simple location manager for profile page
+class ProfileLocationManager {
+    constructor() {
+        this.countySelect = document.getElementById('profileCountySelect');
+        this.townSelect = document.getElementById('profileTownSelect');
+        this.addressInput = document.getElementById('profileAddressLine');
+        this.gpsButton = document.getElementById('profileGpsLocationBtn');
+        this.errorDiv = document.getElementById('profileLocationError');
+        
+        this.init();
+    }
+
+    async init() {
+        await this.loadCounties();
+        this.setupEventListeners();
+        this.loadSavedLocation();
+    }
+
+    async loadCounties() {
+        try {
+            console.log('📍 Loading counties...');
+            const { data: counties, error } = await supabase
+                .from('kenyan_locations')
+                .select('DISTINCT county')
+                .order('county');
+
+            if (error) throw error;
+
+            this.countySelect.innerHTML = '<option value="">Select County</option>';
             
-            // Update statistics
-            document.getElementById('ordersCount').textContent = userOrders.length;
-            document.getElementById('wishlistCount').textContent = Wishlist ? Wishlist.getItems().length : 0;
-            document.getElementById('memberSince').textContent = userData.memberSince;
-
-            // Populate personal information form
-            if (userData.personalInfo) {
-                document.getElementById('fullName').value = userData.personalInfo.fullName || '';
-                document.getElementById('email').value = userData.personalInfo.email || '';
-                document.getElementById('phone').value = userData.personalInfo.phone || '';
-                document.getElementById('dob').value = userData.personalInfo.dob || '';
-                document.getElementById('address').value = userData.personalInfo.address || '';
-                document.getElementById('city').value = userData.personalInfo.city || '';
-            }
-
-            // Load orders
-            loadOrders(userOrders);
-
-            // Load settings
-            loadSettings(userData.settings);
-
-            // Section navigation
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.profile-section');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Remove active class from all items and sections
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    sections.forEach(section => section.classList.remove('active'));
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Show corresponding section
-                    const sectionId = this.getAttribute('data-section') + '-section';
-                    document.getElementById(sectionId).classList.add('active');
-                });
+            counties.forEach(county => {
+                const option = document.createElement('option');
+                option.value = county.county;
+                option.textContent = county.county;
+                this.countySelect.appendChild(option);
             });
 
-            // Avatar upload
-            const avatarUpload = document.getElementById('avatarUpload');
-            if (avatarUpload) {
-                avatarUpload.addEventListener('change', function(e) {
-                    if (this.files && this.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            // Update avatar preview
-                            const avatar = document.getElementById('userAvatar');
-                            avatar.style.backgroundImage = `url(${e.target.result})`;
-                            avatar.textContent = '';
-                            
-                            // Save to user data
-                            const userData = UserData.loadUserData();
-                            userData.avatar = e.target.result;
-                            UserData.saveUserData(userData);
-                        };
-                        reader.readAsDataURL(this.files[0]);
-                    }
-                });
-            }
+            console.log('✅ Counties loaded:', counties.length);
 
-            // Form submission
-            const personalForm = document.getElementById('personalForm');
-            if (personalForm) {
-                personalForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    savePersonalInfo();
-                });
+        } catch (error) {
+            console.error('❌ Error loading counties:', error);
+            this.showError('Failed to load counties. Please refresh the page.');
+        }
+    }
+
+    async loadTowns(county) {
+        try {
+            console.log(`📍 Loading towns for ${county}...`);
+            const { data: towns, error } = await supabase
+                .from('kenyan_locations')
+                .select('town, shipping_cost')
+                .eq('county', county)
+                .order('town');
+
+            if (error) throw error;
+
+            this.townSelect.innerHTML = '<option value="">Select Town</option>';
+            this.townSelect.disabled = false;
+
+            towns.forEach(town => {
+                const option = document.createElement('option');
+                option.value = town.town;
+                option.textContent = town.town;
+                this.townSelect.appendChild(option);
+            });
+
+            console.log(`✅ Towns loaded for ${county}:`, towns.length);
+
+        } catch (error) {
+            console.error('❌ Error loading towns:', error);
+            this.showError('Failed to load towns. Please try again.');
+        }
+    }
+
+    setupEventListeners() {
+        this.countySelect.addEventListener('change', (e) => {
+            this.hideError();
+            if (e.target.value) {
+                this.loadTowns(e.target.value);
+            } else {
+                this.townSelect.innerHTML = '<option value="">Select Town</option>';
+                this.townSelect.disabled = true;
             }
         });
 
-        function loadOrders(orders) {
+        this.gpsButton.addEventListener('click', () => {
+            this.getCurrentLocation();
+        });
+    }
+
+    async loadSavedLocation() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('county, town, address')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                if (profile.county) {
+                    this.countySelect.value = profile.county;
+                    await this.loadTowns(profile.county);
+                    
+                    // Wait a bit for towns to load, then set the town
+                    setTimeout(() => {
+                        if (profile.town) {
+                            this.townSelect.value = profile.town;
+                        }
+                    }, 500);
+                }
+                
+                if (profile.address) {
+                    this.addressInput.value = profile.address;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading saved location:', error);
+        }
+    }
+
+    getLocationData() {
+        return {
+            county: this.countySelect.value,
+            town: this.townSelect.value,
+            address: this.addressInput.value
+        };
+    }
+
+    async getCurrentLocation() {
+        // ... (same GPS code from earlier)
+    }
+
+    showError(message) {
+        this.errorDiv.textContent = message;
+        this.errorDiv.style.display = 'block';
+    }
+
+    hideError() {
+        this.errorDiv.style.display = 'none';
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for profile manager to initialize, then start location manager
+    setTimeout(() => {
+        console.log('📍 Initializing ProfileLocationManager...');
+        window.profileLocationManager = new ProfileLocationManager();
+    }, 1000);
+});
+                
+                // Use the auth guard - this will redirect if not logged in
+                this.currentUser = await checkAuthentication();
+                if (!this.currentUser) {
+                    return false; // Redirect already happened in checkAuthentication()
+                }
+
+                console.log('✅ User authenticated:', this.currentUser.email);
+                await this.loadUserData();
+                this.isInitialized = true;
+                return true;
+
+            } catch (error) {
+                console.error('Init error:', error);
+                this.showError('Initialization error: ' + error.message);
+                return false;
+            }
+        }
+
+        async loadUserData() {
+            try {
+                console.log('📥 Loading user profile...');
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', this.currentUser.id)
+                    .single();
+
+                if (error) {
+                    console.log('Profile not found, creating new one...', error);
+                    await this.createUserProfile();
+                    return;
+                }
+
+                console.log('✅ Profile loaded:', profile);
+                this.userProfile = profile;
+                this.updateUI();
+
+                // Load additional data
+                await this.loadStatistics();
+                await this.loadOrders();
+
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                this.showError('Error loading profile data: ' + error.message);
+            }
+        }
+
+        async createUserProfile() {
+            try {
+                console.log('🆕 Creating new profile...');
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: this.currentUser.id,
+                        full_name: this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0],
+                        email: this.currentUser.email,
+                        created_at: new Date().toISOString()
+                    })
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('Error creating profile:', error);
+                    this.useFallbackData();
+                    return;
+                }
+
+                console.log('✅ Profile created:', data);
+                this.userProfile = data;
+                this.updateUI();
+
+            } catch (error) {
+                console.error('Create profile error:', error);
+                this.useFallbackData();
+            }
+        }
+
+        useFallbackData() {
+            console.log('🔄 Using fallback data...');
+            this.userProfile = {
+                id: this.currentUser.id,
+                full_name: this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0],
+                email: this.currentUser.email,
+                phone: null,
+                date_of_birth: null,
+                address: null,
+                city: null,
+                created_at: new Date().toISOString()
+            };
+            this.updateUI();
+            this.showMessage('Profile created with basic information', 'success');
+        }
+
+        async loadStatistics() {
+            try {
+                console.log('📊 Loading statistics...');
+                
+                let ordersCount = 0;
+                try {
+                    const { count, error } = await supabase
+                        .from('orders')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', this.currentUser.id);
+                    
+                    if (!error) ordersCount = count || 0;
+                } catch (e) {
+                    console.log('Orders table might not exist:', e);
+                }
+
+                let wishlistCount = 0;
+                try {
+                    const { count, error } = await supabase
+                        .from('wishlists')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', this.currentUser.id);
+                    
+                    if (!error) wishlistCount = count || 0;
+                } catch (e) {
+                    console.log('Wishlists table might not exist:', e);
+                }
+
+                let totalSpent = 0;
+                try {
+                    const { data: orders, error } = await supabase
+                        .from('orders')
+                        .select('total_amount')
+                        .eq('user_id', this.currentUser.id)
+                        .eq('status', 'completed');
+
+                    if (!error && orders) {
+                        totalSpent = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+                    }
+                } catch (e) {
+                    console.log('Error loading total spent:', e);
+                }
+
+                document.getElementById('ordersCount').textContent = ordersCount;
+                document.getElementById('wishlistCount').textContent = wishlistCount;
+                document.getElementById('totalSpent').textContent = formatCurrency(totalSpent);
+
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                document.getElementById('ordersCount').textContent = 0;
+                document.getElementById('wishlistCount').textContent = 0;
+                document.getElementById('totalSpent').textContent = formatCurrency(0);
+            }
+        }
+
+        async loadOrders() {
+            try {
+                console.log('📦 Loading orders...');
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select(`
+                        *,
+                        order_items (*)
+                    `)
+                    .eq('user_id', this.currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.log('Error loading orders:', error);
+                    this.showOrdersEmptyState();
+                    return;
+                }
+
+                this.displayOrders(orders || []);
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                this.showOrdersEmptyState();
+            }
+        }
+
+        displayOrders(orders) {
             const ordersList = document.getElementById('ordersList');
             
             if (!orders || orders.length === 0) {
-                ordersList.innerHTML = `
-                    <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14,2 14,8 20,8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <h3>No Orders Yet</h3>
-                        <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
-                        <button class="btn btn-primary" onclick="navigateTo('shop.html')" style="margin-top: 1rem;">Start Shopping</button>
-                    </div>
-                `;
+                this.showOrdersEmptyState();
                 return;
             }
 
             let ordersHTML = '';
             orders.forEach(order => {
+                const orderDate = formatDate(order.created_at);
+                const orderTotal = formatCurrency(order.total_amount);
+                const statusClass = `status-${order.status || 'pending'}`;
+                const statusText = (order.status || 'pending').charAt(0).toUpperCase() + (order.status || 'pending').slice(1);
+
                 let itemsHTML = '';
-                order.items.forEach(item => {
-                    itemsHTML += `
+                if (order.order_items && order.order_items.length > 0) {
+                    order.order_items.forEach(item => {
+                        itemsHTML += `
+                            <div class="order-item">
+                                <img src="${item.product_image || 'images/placeholder.jpg'}" alt="${item.product_name}" class="order-item-image" onerror="this.src='images/placeholder.jpg'">
+                                <div class="order-item-info">
+                                    <div class="order-item-name">${item.product_name}</div>
+                                    <div class="order-item-price">${formatCurrency(item.product_price)} × ${item.quantity}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    itemsHTML = `
                         <div class="order-item">
-                            <img src="${item.image}" alt="${item.name}" class="order-item-image" onerror="this.src='images/placeholder.jpg'">
                             <div class="order-item-info">
-                                <div class="order-item-name">${item.name}</div>
-                                <div class="order-item-price">KSh ${item.price.toLocaleString()}</div>
+                                <div class="order-item-name">Order details not available</div>
+                                <div class="order-item-price">${orderTotal}</div>
                             </div>
                         </div>
                     `;
-                });
+                }
 
                 ordersHTML += `
                     <div class="order-card">
                         <div class="order-header">
                             <div>
-                                <div class="order-id">Order #${order.id}</div>
-                                <div class="order-date">Placed on ${new Date(order.date).toLocaleDateString()}</div>
+                                <div class="order-id">Order #${order.order_number || order.id.substring(0, 8)}</div>
+                                <div class="order-date">Placed on ${orderDate}</div>
                             </div>
-                            <div class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+                            <div class="order-status ${statusClass}">${statusText}</div>
                         </div>
                         <div class="order-items">
                             ${itemsHTML}
                         </div>
-                        <div class="order-total">KSh ${order.total.toLocaleString()}</div>
+                        <div class="order-total">${orderTotal}</div>
                     </div>
                 `;
             });
@@ -930,99 +1446,310 @@
             ordersList.innerHTML = ordersHTML;
         }
 
-        function loadSettings(settings) {
-            if (!settings) return;
-            
-            document.getElementById('email-notifications').checked = settings.emailNotifications;
-            document.getElementById('sms-notifications').checked = settings.smsNotifications;
-            document.getElementById('newsletter').checked = settings.newsletter;
-            document.getElementById('show-profile').checked = settings.showProfile;
-            document.getElementById('data-collection').checked = settings.dataCollection;
+        showOrdersEmptyState() {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = `
+                <div class="empty-state">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <h3>No Orders Yet</h3>
+                    <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
+                    <button class="btn btn-primary" onclick="navigateTo('shop.html')" style="margin-top: 1rem;">Start Shopping</button>
+                </div>
+            `;
         }
 
-        function savePersonalInfo() {
-            const userData = UserData.loadUserData();
-            
-            userData.personalInfo = {
-                fullName: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                dob: document.getElementById('dob').value,
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value
-            };
+        updateUI() {
+    if (!this.userProfile) return;
 
-            UserData.saveUserData(userData);
-            showSuccessMessage('Personal information updated successfully!');
+    const profile = this.userProfile;
+    const userEmail = this.currentUser.email;
+    const userName = profile.full_name || userEmail.split('@')[0];
+    
+    console.log('🔄 Updating UI with profile:', profile);
+    
+    // Update sidebar and view-only sections (keep existing)
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('userEmail').textContent = userEmail;
+    document.getElementById('memberSince').textContent = formatDate(profile.created_at);
+
+    const photoData = getProfilePhoto(userEmail, userName);
+    const avatar = document.getElementById('userAvatar');
+    avatar.style.backgroundImage = `url(${photoData.gravatar})`;
+    avatar.textContent = photoData.initials;
+
+    // Update view-only profile section
+    document.getElementById('displayFullName').textContent = userName;
+    document.getElementById('displayEmail').textContent = userEmail;
+    document.getElementById('displayPhone').textContent = profile.phone || 'Not set';
+    document.getElementById('displayDob').textContent = formatDate(profile.date_of_birth);
+    document.getElementById('displayAddress').textContent = profile.address || 'Not set';
+    document.getElementById('displayCity').textContent = profile.city || 'Not set';
+
+    // Update edit form - KEEP existing fields
+    document.getElementById('editFullName').value = userName;
+    document.getElementById('editPhone').value = profile.phone || '';
+    document.getElementById('editDob').value = profile.date_of_birth || '';
+
+    // Initialize location selector with profile data
+    this.initializeLocationSelector(profile);
+}
+
+initializeLocationSelector(profile) {
+    // Wait a bit for the DOM to be ready
+    setTimeout(() => {
+        const locationContainer = document.getElementById('profileLocationContainer');
+        if (locationContainer && window.LocationSelector) {
+            this.locationSelector = new LocationSelector('profileLocationContainer', {
+                showShippingCost: false,
+                initialCounty: profile.county || '',
+                initialTown: profile.town || '',
+                initialAddress: profile.address || '',
+                onLocationChange: (location) => {
+                    console.log('📍 Location updated:', location);
+                    // This will be used when saving the profile
+                }
+            });
         }
+    }, 100);
+}
 
-        function saveSettings() {
-            const userData = UserData.loadUserData();
-            
-            userData.settings = {
-                emailNotifications: document.getElementById('email-notifications').checked,
-                smsNotifications: document.getElementById('sms-notifications').checked,
-                newsletter: document.getElementById('newsletter').checked,
-                showProfile: document.getElementById('show-profile').checked,
-                dataCollection: document.getElementById('data-collection').checked
-            };
+        async updateProfile(profileData) {
+    try {
+        console.log('💾 Starting profile update...');
+        console.log('📦 Update data:', profileData);
+        
+        const updatePayload = {
+            full_name: profileData.fullName,
+            phone: profileData.phone || null,
+            date_of_birth: profileData.dob || null,
+            // Add location fields
+            county: profileData.county || null,
+            town: profileData.town || null,
+            address: profileData.address || null,
+            updated_at: new Date().toISOString()
+        };
 
-            UserData.saveUserData(userData);
-            showSuccessMessage('Settings updated successfully!');
-        }
+                console.log('📤 Supabase update payload:', updatePayload);
 
-        function resetForm() {
-            const userData = UserData.loadUserData();
-            
-            document.getElementById('fullName').value = userData.personalInfo.fullName || '';
-            document.getElementById('email').value = userData.personalInfo.email || '';
-            document.getElementById('phone').value = userData.personalInfo.phone || '';
-            document.getElementById('dob').value = userData.personalInfo.dob || '';
-            document.getElementById('address').value = userData.personalInfo.address || '';
-            document.getElementById('city').value = userData.personalInfo.city || '';
-        }
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .update(updatePayload)
+                    .eq('id', this.currentUser.id)
+                    .select();
 
-        function resetSettings() {
-            const defaultSettings = {
-                emailNotifications: true,
-                smsNotifications: false,
-                newsletter: true,
-                showProfile: true,
-                dataCollection: false
-            };
-            loadSettings(defaultSettings);
-        }
+                saveButton.disabled = false;
+                saveButton.textContent = originalText;
 
-        function showSuccessMessage(message) {
-            const successMessage = document.getElementById('successMessage');
-            successMessage.textContent = message;
-            successMessage.classList.add('show');
-            
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 3000);
-        }
+                if (error) {
+                    console.error('❌ Supabase update error:', error);
+                    this.showError('Error updating profile: ' + error.message);
+                    return false;
+                }
 
-        // Placeholder functions for settings actions
-        function changePassword() {
-            alert('Password change functionality would be implemented here.');
-        }
+                console.log('✅ Profile update successful!', data);
+                
+                if (!data || data.length === 0) {
+                    console.error('❌ No data returned from update');
+                    this.showError('Profile update failed: No data returned');
+                    return false;
+                }
 
-        function enableTwoFactor() {
-            alert('Two-factor authentication setup would be implemented here.');
-        }
+                this.userProfile = data[0];
+                this.updateUI();
+                this.showMessage('Profile updated successfully!', 'success');
+                return true;
 
-        function exportData() {
-            alert('Data export functionality would be implemented here.');
-        }
-
-        function deleteAccount() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                alert('Account deletion functionality would be implemented here.');
+            } catch (error) {
+                console.error('❌ Update profile exception:', error);
+                
+                const saveButton = document.getElementById('saveButton');
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+                
+                this.showError('Unexpected error: ' + error.message);
+                return false;
             }
         }
+
+        showMessage(message, type = 'success') {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            successMessage.classList.remove('show');
+            errorMessage.classList.remove('show');
+            
+            if (type === 'success') {
+                successMessage.textContent = message;
+                successMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 5000);
+            } else {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+            }
+        }
+
+        showError(message) {
+            this.showMessage(message, 'error');
+        }
+    }
+
+    // Global instance
+    const profileManager = new ProfileManager();
+
+    // Navigation and UI Functions
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    function switchToEditMode() {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.profile-section').forEach(section => section.classList.remove('active'));
         
-    // Mobile menu functionality for profile page
+        document.querySelector('[data-section="settings"]').classList.add('active');
+        document.getElementById('settings-section').classList.add('active');
+    }
+
+    function resetEditForm() {
+        profileManager.updateUI();
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.profile-section').forEach(section => section.classList.remove('active'));
+        
+        document.querySelector('[data-section="personal"]').classList.add('active');
+        document.getElementById('personal-section').classList.add('active');
+    }
+
+    // Logout function for profile page
+    async function logoutFromProfile() {
+        if (confirm('Are you sure you want to logout?')) {
+            try {
+                console.log('🔄 Logging out from profile...');
+                
+                const logoutBtn = event.target.closest('button');
+                const originalText = logoutBtn.innerHTML;
+                logoutBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                    </svg>
+                    Logging out...
+                `;
+                logoutBtn.disabled = true;
+                
+                const { error } = await supabase.auth.signOut();
+                
+                if (error) {
+                    console.error('❌ Logout error:', error);
+                    alert('Logout failed. Please try again.');
+                    logoutBtn.innerHTML = originalText;
+                    logoutBtn.disabled = false;
+                    return;
+                }
+                
+                console.log('✅ Logout successful!');
+                profileManager.showMessage('Logged out successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Logout exception:', error);
+                alert('An unexpected error occurred during logout.');
+                
+                const logoutBtn = event.target.closest('button');
+                logoutBtn.innerHTML = originalText;
+                logoutBtn.disabled = false;
+            }
+        }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🚀 Initializing profile page...');
+        
+        // Extra protection for direct access
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            redirectToLogin();
+            return;
+        }
+
+        initializeMobileMenu();
+
+        // Initialize profile manager
+        const authenticated = await profileManager.init();
+        if (!authenticated) return;
+
+        // Section navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.profile-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                navItems.forEach(nav => nav.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.getAttribute('data-section') + '-section';
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Form submission
+        const personalForm = document.getElementById('personalForm');
+        if (personalForm) {
+            console.log('✅ Form found, attaching event listener...');
+            
+            // Form submission - update to include location data
+personalForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    console.log('🎯 FORM SUBMISSION TRIGGERED');
+    
+    // Get location data
+    const locationData = window.profileLocationManager ? 
+        window.profileLocationManager.getLocationData() : 
+        { county: '', town: '', address: '' };
+    
+    const profileData = {
+        fullName: document.getElementById('editFullName').value,
+        phone: document.getElementById('editPhone').value,
+        dob: document.getElementById('editDob').value,
+        // Include location data
+        county: locationData.county,
+        town: locationData.town,
+        address: locationData.address
+    };
+
+    console.log('📦 Form data with location:', profileData);
+
+    const success = await profileManager.updateProfile(profileData);
+
+    if (success) {
+        setTimeout(() => {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.profile-section').forEach(section => section.classList.remove('active'));
+            
+            document.querySelector('[data-section="personal"]').classList.add('active');
+            document.getElementById('personal-section').classList.add('active');
+        }, 2000);
+    }
+});
+        } else {
+            console.error('❌ Form element not found!');
+        }
+    });
+
+    // Mobile menu functionality
     function initializeMobileMenu() {
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -1033,17 +1760,14 @@
                 const isOpen = mobileMenu.style.display === 'block';
                 mobileMenu.style.display = isOpen ? 'none' : 'block';
                 
-                // Update button icon
                 const icon = mobileMenuBtn.querySelector('svg');
                 if (isOpen) {
-                    // Show hamburger icon
                     icon.innerHTML = `
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     `;
                 } else {
-                    // Show close icon
                     icon.innerHTML = `
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -1051,7 +1775,6 @@
                 }
             });
             
-            // Close mobile menu when clicking on links
             const mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
             mobileNavLinks.forEach(link => {
                 link.addEventListener('click', function() {
@@ -1065,7 +1788,6 @@
                 });
             });
 
-            // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
                 if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
                     mobileMenu.style.display = 'none';
@@ -1080,237 +1802,26 @@
         }
     }
 
-    // Also add the navigation function that's missing
-    function navigateTo(url) {
-        window.location.href = url;
-    }
-
-    // Initialize when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeMobileMenu();
-        
-        // Your existing profile page code here...
-        const userData = UserData.loadUserData();
-        const userOrders = UserData.loadOrders();
-        
-        // Update statistics
-        document.getElementById('ordersCount').textContent = userOrders.length;
-        document.getElementById('wishlistCount').textContent = Wishlist ? Wishlist.getItems().length : 0;
-        document.getElementById('memberSince').textContent = userData.memberSince;
-
-        // Populate personal information form
-        if (userData.personalInfo) {
-            document.getElementById('fullName').value = userData.personalInfo.fullName || '';
-            document.getElementById('email').value = userData.personalInfo.email || '';
-            document.getElementById('phone').value = userData.personalInfo.phone || '';
-            document.getElementById('dob').value = userData.personalInfo.dob || '';
-            document.getElementById('address').value = userData.personalInfo.address || '';
-            document.getElementById('city').value = userData.personalInfo.city || '';
-        }
-
-        // Load orders
-        loadOrders(userOrders);
-        loadSettings(userData.settings);
-
-        // Section navigation
-        const navItems = document.querySelectorAll('.nav-item');
-        const sections = document.querySelectorAll('.profile-section');
-
-        navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove active class from all items and sections
-                navItems.forEach(nav => nav.classList.remove('active'));
-                sections.forEach(section => section.classList.remove('active'));
-                
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Show corresponding section
-                const sectionId = this.getAttribute('data-section') + '-section';
-                document.getElementById(sectionId).classList.add('active');
-            });
-        });
-
-        // Avatar upload
-        const avatarUpload = document.getElementById('avatarUpload');
-        if (avatarUpload) {
-            avatarUpload.addEventListener('change', function(e) {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const avatar = document.getElementById('userAvatar');
-                        avatar.style.backgroundImage = `url(${e.target.result})`;
-                        avatar.textContent = '';
-                        
-                        const userData = UserData.loadUserData();
-                        userData.avatar = e.target.result;
-                        UserData.saveUserData(userData);
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-        }
-
-        // Form submission
-        const personalForm = document.getElementById('personalForm');
-        if (personalForm) {
-            personalForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                savePersonalInfo();
-            });
-        }
-    });
-
-    // Rest of your existing profile functions...
-    // (Duplicate UserData object removed to fix redeclaration error)
-
-    function loadOrders(orders) {
-        const ordersList = document.getElementById('ordersList');
-        
-        if (!orders || orders.length === 0) {
-            ordersList.innerHTML = `
-                <div class="empty-state">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14,2 14,8 20,8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>
-                    <h3>No Orders Yet</h3>
-                    <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
-                    <button class="btn btn-primary" onclick="navigateTo('shop.html')" style="margin-top: 1rem;">Start Shopping</button>
-                </div>
-            `;
-            return;
-        }
-
-        let ordersHTML = '';
-        orders.forEach(order => {
-            let itemsHTML = '';
-            order.items.forEach(item => {
-                itemsHTML += `
-                    <div class="order-item">
-                        <img src="${item.image}" alt="${item.name}" class="order-item-image" onerror="this.src='images/placeholder.jpg'">
-                        <div class="order-item-info">
-                            <div class="order-item-name">${item.name}</div>
-                            <div class="order-item-price">KSh ${item.price.toLocaleString()}</div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            ordersHTML += `
-                <div class="order-card">
-                    <div class="order-header">
-                        <div>
-                            <div class="order-id">Order #${order.id}</div>
-                            <div class="order-date">Placed on ${new Date(order.date).toLocaleDateString()}</div>
-                        </div>
-                        <div class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
-                    </div>
-                    <div class="order-items">
-                        ${itemsHTML}
-                    </div>
-                    <div class="order-total">KSh ${order.total.toLocaleString()}</div>
-                </div>
-            `;
-        });
-
-        ordersList.innerHTML = ordersHTML;
-    }
-
-    function loadSettings(settings) {
-        if (!settings) return;
-        
-        document.getElementById('email-notifications').checked = settings.emailNotifications;
-        document.getElementById('sms-notifications').checked = settings.smsNotifications;
-        document.getElementById('newsletter').checked = settings.newsletter;
-        document.getElementById('show-profile').checked = settings.showProfile;
-        document.getElementById('data-collection').checked = settings.dataCollection;
-    }
-
-    function savePersonalInfo() {
-        const userData = UserData.loadUserData();
-        
-        userData.personalInfo = {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            dob: document.getElementById('dob').value,
-            address: document.getElementById('address').value,
-            city: document.getElementById('city').value
-        };
-
-        UserData.saveUserData(userData);
-        showSuccessMessage('Personal information updated successfully!');
-    }
-
-    function saveSettings() {
-        const userData = UserData.loadUserData();
-        
-        userData.settings = {
-            emailNotifications: document.getElementById('email-notifications').checked,
-            smsNotifications: document.getElementById('sms-notifications').checked,
-            newsletter: document.getElementById('newsletter').checked,
-            showProfile: document.getElementById('show-profile').checked,
-            dataCollection: document.getElementById('data-collection').checked
-        };
-
-        UserData.saveUserData(userData);
-        showSuccessMessage('Settings updated successfully!');
-    }
-
-    function resetForm() {
-        const userData = UserData.loadUserData();
-        
-        document.getElementById('fullName').value = userData.personalInfo.fullName || '';
-        document.getElementById('email').value = userData.personalInfo.email || '';
-        document.getElementById('phone').value = userData.personalInfo.phone || '';
-        document.getElementById('dob').value = userData.personalInfo.dob || '';
-        document.getElementById('address').value = userData.personalInfo.address || '';
-        document.getElementById('city').value = userData.personalInfo.city || '';
-    }
-
-    function resetSettings() {
-        const defaultSettings = {
-            emailNotifications: true,
-            smsNotifications: false,
-            newsletter: true,
-            showProfile: true,
-            dataCollection: false
-        };
-        loadSettings(defaultSettings);
-    }
-
-    function showSuccessMessage(message) {
-        const successMessage = document.getElementById('successMessage');
-        successMessage.textContent = message;
-        successMessage.classList.add('show');
-        
-        setTimeout(() => {
-            successMessage.classList.remove('show');
-        }, 3000);
-    }
-
+    // Placeholder functions
     function changePassword() {
-        alert('Password change functionality would be implemented here.');
+        alert('Password change functionality will be implemented soon.');
     }
 
     function enableTwoFactor() {
-        alert('Two-factor authentication setup would be implemented here.');
+        alert('Two-factor authentication setup will be implemented soon.');
     }
 
     function exportData() {
-        alert('Data export functionality would be implemented here.');
+        alert('Data export functionality will be implemented soon.');
     }
 
     function deleteAccount() {
         if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-            alert('Account deletion functionality would be implemented here.');
+            alert('Account deletion functionality will be implemented soon.');
         }
     }
-    </script>
+    
+    
+</script>
 </body>
 </html>

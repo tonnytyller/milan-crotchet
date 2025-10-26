@@ -1,14 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Your existing meta tags and links -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product - Milan Crochet</title>
+    <title>Milan Crochet - Handcrafted with Love</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- REPLACE your current Supabase initialization with this -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    console.log('🔄 Initializing Supabase...');
+    
+    const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+    
+    // Initialize Supabase properly
+    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Test if it's working
+    console.log('Supabase client:', window.supabase);
+    console.log('Has .from method:', typeof window.supabase.from === 'function');
+    console.log('Has .auth method:', typeof window.supabase.auth === 'function');
+    
+    console.log('✅ Supabase initialized successfully');
+</script>
     <style>
         /* Wishlist Styles */
         .wishlist-modal {

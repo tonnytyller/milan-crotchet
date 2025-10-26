@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="status">Testing...</div>
+    
+    <script>
+        console.log('Testing Supabase...');
+        
+        try {
+            const supabase = supabase.createClient(
+                'https://botiybwcqbybnrzpavsy.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8'
+            );
+            
+            console.log('Supabase created:', supabase);
+            document.getElementById('status').textContent = '✅ Supabase initialized successfully!';
+            
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('status').textContent = '❌ Error: ' + error.message;
+        }
+    </script>
+</body>
+</html>

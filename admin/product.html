@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - Milan Crochet Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <div class="admin-brand">
+                        <div class="logo-icon">M</div>
+                        <div>
+                            <h1 class="admin-title">Milan Crochet</h1>
+                            <p class="admin-subtitle">Product Management</p>
+                        </div>
+                    </div>
+                    <div class="admin-user">
+                        <span class="welcome-text">Welcome, <span id="adminName">Admin</span></span>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Products Header -->
+            <div class="products-header section-header">
+                <h2 class="section-title">Product Catalog</h2>
+                <div class="products-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="productSearch" class="search-input" placeholder="Search products...">
+                    </div>
+                    <div class="quick-actions">
+                        <button class="action-btn secondary" id="bulkActionsBtn">
+                            <i class="fas fa-layer-group"></i>
+                            Bulk Actions
+                        </button>
+                        <button class="action-btn primary" id="addProductBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Product
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Actions Panel (Hidden by default) -->
+            <div id="bulkActionsPanel" class="bulk-actions-panel" style="display: none;">
+                <div class="bulk-header">
+                    <h4>Bulk Actions</h4>
+                    <span id="selectedCount">0 products selected</span>
+                </div>
+                <div class="bulk-actions">
+                    <button class="btn btn-outline" id="bulkExportBtn">
+                        <i class="fas fa-download"></i>
+                        Export Selected
+                    </button>
+                    <button class="btn btn-outline" id="bulkEditBtn">
+                        <i class="fas fa-edit"></i>
+                        Bulk Edit
+                    </button>
+                    <button class="btn btn-danger" id="bulkDeleteBtn">
+                        <i class="fas fa-trash"></i>
+                        Delete Selected
+                    </button>
+                    <button class="btn btn-outline" id="bulkCancelBtn">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsGrid">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+
+            <!-- No Products State -->
+            <div id="noProductsState" class="empty-state" style="display: none;">
+                <i class="fas fa-tshirt"></i>
+                <h3>No Products Found</h3>
+                <p>Get started by adding your first product to the catalog.</p>
+                <button class="action-btn primary" id="addFirstProductBtn">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Add New Product</h3>
+                <button class="modal-close" id="closeProductModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Product Name *</label>
+                            <input type="text" id="productName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price (KSh) *</label>
+                            <input type="number" id="productPrice" name="price" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" name="description" rows="3" placeholder="Describe your product..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCategory">Category</label>
+                            <input type="text" id="productCategory" name="category" list="categoriesList" placeholder="e.g., Baby, Accessories">
+                            <datalist id="categoriesList">
+                                <!-- Categories will be populated dynamically -->
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="productTags">Tags</label>
+                            <input type="text" id="productTags" name="tags" placeholder="e.g., handmade, crochet, summer">
+                            <small>Separate tags with commas</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Images</label>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload images or drag and drop</p>
+                                <span>PNG, JPG up to 5MB</span>
+                            </div>
+                            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="productActive" name="is_active" checked>
+                            <span class="checkmark"></span>
+                            Product is active and visible to customers
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancelProductBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveProductBtn">
+                            <i class="fas fa-save"></i>
+                            Save Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Edit Modal -->
+    <div class="modal" id="bulkEditModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bulk Edit Products</h3>
+                <button class="modal-close" id="closeBulkEditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bulkEditForm">
+                    <div class="form-group">
+                        <label for="bulkPrice">Update Price</label>
+                        <input type="number" id="bulkPrice" step="0.01" min="0" placeholder="Leave empty to keep current">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkCategory">Update Category</label>
+                        <input type="text" id="bulkCategory" placeholder="Leave empty to keep current">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="bulkActive">
+                            <span class="checkmark"></span>
+                            Set all as active
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancelBulkEditBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Apply Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/database-orders.js"></script>
+    <script src="js/product-management.js"></script>
+</body>
+</html>

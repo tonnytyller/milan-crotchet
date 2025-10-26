@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Milan Crochet Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .brand-text p {
+            color: #6b7280;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-orders { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .card-products { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .card-customers { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .card-analytics { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .card-settings { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .card-arrow {
+            color: #9ca3af;
+            font-size: 1.25rem;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box .label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="admin-brand">
+                <div class="logo-icon">M</div>
+                <div class="brand-text">
+                    <h1>Milan Crochet Admin</h1>
+                    <p>Business Management Dashboard</p>
+                </div>
+            </div>
+            <div class="user-menu">
+                <span class="welcome-text">Welcome, <span id="adminName">Admin</span></span>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-box">
+                <div class="number" id="totalRevenue">KSh 0</div>
+                <div class="label">Revenue Today</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="pendingOrders">0</div>
+                <div class="label">Pending Orders</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="totalProducts">0</div>
+                <div class="label">Products</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="totalCustomers">0</div>
+                <div class="label">Customers</div>
+            </div>
+        </div>
+
+        <!-- Navigation Cards -->
+        <div class="dashboard-grid">
+            <!-- Orders Card -->
+            <div class="dashboard-card" onclick="navigateTo('orders.html')">
+                <div class="card-header">
+                    <div class="card-icon card-orders">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Order Management</div>
+                        <div class="card-description">Process orders, update status, handle cancellations</div>
+                    </div>
+                </div>
+                <div class="card-stats">
+                    <div>
+                        <div class="stat-number" id="ordersCount">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Card -->
+            <div class="dashboard-card" onclick="navigateTo('products.html')">
+                <div class="card-header">
+                    <div class="card-icon card-products">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Product Catalog</div>
+                        <div class="card-description">Add, edit, and manage your crochet products</div>
+                    </div>
+                </div>
+                <div class="card-stats">
+                    <div>
+                        <div class="stat-number" id="productsCount">0</div>
+                        <div class="stat-label">Active Products</div>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Card -->
+            <div class="dashboard-card" onclick="navigateTo('customers.html')">
+                <div class="card-header">
+                    <div class="card-icon card-customers">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Customer Management</div>
+                        <div class="card-description">View customer profiles and order history</div>
+                    </div>
+                </div>
+                <div class="card-stats">
+                    <div>
+                        <div class="stat-number" id="customersCount">0</div>
+                        <div class="stat-label">Total Customers</div>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Card -->
+            <div class="dashboard-card" onclick="navigateTo('analytics.html')">
+                <div class="card-header">
+                    <div class="card-icon card-analytics">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Business Analytics</div>
+                        <div class="card-description">Sales reports, trends, and performance insights</div>
+                    </div>
+                </div>
+                <div class="card-stats">
+                    <div>
+                        <div class="stat-number">📊</div>
+                        <div class="stat-label">View Reports</div>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Card -->
+            <div class="dashboard-card" onclick="navigateTo('settings.html')">
+                <div class="card-header">
+                    <div class="card-icon card-settings">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Store Settings</div>
+                        <div class="card-description">Configure your store, payment methods, and preferences</div>
+                    </div>
+                </div>
+                <div class="card-stats">
+                    <div>
+                        <div class="stat-number">⚙️</div>
+                        <div class="stat-label">Configuration</div>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://botiybwcqbybnrzpavsy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdGl5YndjcWJ5Ym5yenBhdnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MDExNjMsImV4cCI6MjA3NjA3NzE2M30.lhZaya1iPIGfrcCQC369s_v0NcT7P1GtmQvzQteUyo8';
+        let supabase;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAdminSession();
+            initializeSupabase();
+        });
+
+        function initializeSupabase() {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            loadDashboardStats();
+        }
+
+        function checkAdminSession() {
+            const adminToken = localStorage.getItem('admin_token');
+            if (!adminToken) {
+                window.location.href = 'index.html';
+                return;
+            }
+            try {
+                const session = JSON.parse(adminToken);
+                document.getElementById('adminName').textContent = session.name;
+            } catch (error) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('admin_token');
+            window.location.href = 'index.html';
+        }
+
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        async function loadDashboardStats() {
+            try {
+                // Load orders count
+                const { data: orders, error: ordersError } = await supabase
+                    .from('orders')
+                    .select('id, status, total_amount, created_at');
+
+                if (!ordersError && orders) {
+                    document.getElementById('ordersCount').textContent = orders.length;
+                    document.getElementById('pendingOrders').textContent = orders.filter(o => o.status === 'pending').length;
+                    
+                    // Today's revenue
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayRevenue = orders
+                        .filter(o => o.created_at.includes(today))
+                        .reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
+                    document.getElementById('totalRevenue').textContent = `KSh ${todayRevenue}`;
+                }
+
+                // Load products count (you'll need to create products table)
+                const { data: products, error: productsError } = await supabase
+                    .from('products')
+                    .select('id')
+                    .eq('active', true);
+
+                if (!productsError && products) {
+                    document.getElementById('productsCount').textContent = products.length;
+                    document.getElementById('totalProducts').textContent = products.length;
+                } else {
+                    // Fallback if products table doesn't exist
+                    document.getElementById('productsCount').textContent = '0';
+                    document.getElementById('totalProducts').textContent = '0';
+                }
+
+                // Load customers count (from orders)
+                if (orders) {
+                    const uniqueCustomers = new Set(orders.map(o => o.client_email).filter(Boolean));
+                    document.getElementById('customersCount').textContent = uniqueCustomers.size;
+                    document.getElementById('totalCustomers').textContent = uniqueCustomers.size;
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+    </script>
+</body>
+</html>
