@@ -1,0 +1,85 @@
+@import url('./utilities/reset.css');
+@import url('./utilities/variables.css');
+@import url('./utilities/animations.css');
+
+html { color-scheme: light; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-gray-900);
+  background: linear-gradient(180deg, #fff 0%, #fff 60%, #fffaf7 100%);
+}
+
+.container {
+  width: min(100% - 2rem, var(--container-max));
+  margin-inline: auto;
+}
+
+.header-spacer { height: 72px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  transition: var(--transition);
+  font-weight: 600;
+}
+
+.btn-primary {
+  color: white;
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary:hover { filter: brightness(0.98); transform: translateY(-1px); }
+
+.card {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) {
+  .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+.header {
+  position: fixed; inset: 0 0 auto 0; height: 72px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-gray-200);
+  z-index: 50;
+}
+
+.header .inner {
+  height: 72px; display: flex; align-items: center; justify-content: space-between;
+}
+
+.header .logo { font-weight: 900; font-size: 1.25rem; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.header .nav { display: flex; gap: 16px; align-items: center; }
+
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px; font-size: 12px;
+  border-radius: var(--radius-pill); color: white; background: var(--color-gray-900);
+}
+
+.toast-container { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 100; }
+.toast { padding: 12px 14px; border-radius: var(--radius-md); color: white; box-shadow: var(--shadow-lg); animation: fadeInUp 250ms ease; }
+.toast-success { background: var(--color-success); }
+.toast-error { background: var(--color-error); }
+.toast-info { background: var(--color-gray-800); }

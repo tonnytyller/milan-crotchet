@@ -1,0 +1,5 @@
+.hero { display: grid; align-items: center; grid-template-columns: 1.1fr 0.9fr; gap: 24px; padding: 32px 0; }
+.hero .headline { font-size: clamp(28px, 5vw, 46px); line-height: 1.05; font-weight: 900; }
+.hero .sub { color: var(--color-gray-600); }
+.hero .actions { display: flex; gap: 12px; margin-top: 16px; }
+@media (max-width: 840px) { .hero { grid-template-columns: 1fr; } }

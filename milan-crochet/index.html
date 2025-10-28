@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Milan Crochet</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="/milan-crochet/css/style.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/header.css">
+  <link rel="stylesheet" href="/milan-crochet/css/pages/home.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="header-spacer"></div>
+  <main class="container">
+    <section class="hero">
+      <div class="copy">
+        <h1 class="headline">Handcrafted Elegance in Every Stitch</h1>
+        <p class="sub">Discover unique Kenyan crochet designs made with love and precision.</p>
+        <div class="actions">
+          <a href="/milan-crochet/shop.html" class="btn btn-primary">Shop Now</a>
+          <a href="/milan-crochet/stories.html" class="btn btn-outline">View Stories</a>
+        </div>
+      </div>
+      <div class="media card">
+        <img src="/milan-crochet/assets/images/products/placeholder.jpg" alt="Featured product" onerror="this.style.display='none'">
+      </div>
+    </section>
+
+    <section>
+      <h2>Featured Products</h2>
+      <div class="grid grid-4" id="featured-products"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/milan-crochet/js/utils/constants.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/helpers.js"></script>
+  <script type="module" src="/milan-crochet/js/components/toast.js"></script>
+  <script type="module" src="/milan-crochet/js/components/header.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/supabase-client.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/auth.js"></script>
+  <script type="module" src="/milan-crochet/js/pages/home.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/milan-crochet/sw.js');
+      });
+    }
+  </script>
+</body>
+</html>

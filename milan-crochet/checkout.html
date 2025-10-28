@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Milan Crochet</title>
+  <link rel="stylesheet" href="/milan-crochet/css/style.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/header.css">
+  <link rel="stylesheet" href="/milan-crochet/css/pages/checkout.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/forms.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="header-spacer"></div>
+  <main class="container checkout">
+    <section>
+      <h1>Checkout</h1>
+      <form id="address-form">
+        <div class="row row-2">
+          <div class="input">
+            <label>Full Name</label>
+            <input name="full_name" required />
+          </div>
+          <div class="input">
+            <label>Phone</label>
+            <input name="phone" required />
+          </div>
+          <div class="input">
+            <label>County</label>
+            <select name="county" required></select>
+          </div>
+          <div class="input">
+            <label>Postal Code</label>
+            <input name="postal_code" required />
+          </div>
+          <div class="input" style="grid-column: 1 / -1">
+            <label>Address</label>
+            <input name="address_line" required />
+          </div>
+        </div>
+      </form>
+      <div class="payment-methods" id="payment-methods">
+        <div class="payment-option">
+          <input type="radio" name="payment" value="mpesa_send">
+          <strong>M-Pesa Send Money</strong>
+          <p>Send to: <strong>07XX XXX XXX</strong></p>
+          <input type="text" class="mpesa-code" placeholder="Transaction Code">
+        </div>
+        <div class="payment-option">
+          <input type="radio" name="payment" value="cash_delivery">
+          <strong>Cash on Delivery (30% Deposit)</strong>
+          <p>Pay 30% now via M-Pesa</p>
+          <input type="text" class="deposit-code" placeholder="Deposit Code">
+        </div>
+        <div class="payment-option">
+          <input type="radio" name="payment" value="whatsapp">
+          <strong>Pay via WhatsApp</strong>
+          <button class="whatsapp-btn">Open WhatsApp</button>
+        </div>
+      </div>
+      <button id="place-order" class="btn btn-primary" style="margin-top: 12px">Place Order</button>
+    </section>
+    <aside>
+      <h2>Summary</h2>
+      <div id="order-summary"></div>
+    </aside>
+  </main>
+  <script type="module" src="/milan-crochet/js/components/header.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/constants.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/formatters.js"></script>
+  <script type="module" src="/milan-crochet/js/utils/helpers.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/supabase-client.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/cart.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/orders.js"></script>
+  <script type="module" src="/milan-crochet/js/pages/checkout.js"></script>
+</body>
+</html>

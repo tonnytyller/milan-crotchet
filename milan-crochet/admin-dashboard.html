@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard - Milan Crochet</title>
+  <link rel="stylesheet" href="/milan-crochet/css/style.css">
+  <link rel="stylesheet" href="/milan-crochet/css/components/header.css">
+  <link rel="stylesheet" href="/milan-crochet/css/pages/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="header-spacer"></div>
+  <main class="container admin">
+    <aside class="sidebar">
+      <h3>Admin</h3>
+      <nav style="display:grid; gap:6px; margin-top:10px">
+        <button class="btn btn-outline" data-view="payments">Pending Payments</button>
+        <button class="btn btn-outline" data-view="products">Products</button>
+        <button class="btn btn-outline" data-view="orders">Orders</button>
+      </nav>
+    </aside>
+    <section class="content">
+      <div id="admin-content"></div>
+    </section>
+  </main>
+  <script type="module" src="/milan-crochet/js/components/header.js"></script>
+  <script type="module" src="/milan-crochet/js/supabase/supabase-client.js"></script>
+  <script type="module" src="/milan-crochet/js/pages/admin.js"></script>
+</body>
+</html>
